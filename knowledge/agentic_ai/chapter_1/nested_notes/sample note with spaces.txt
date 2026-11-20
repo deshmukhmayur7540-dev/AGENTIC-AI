@@ -1,0 +1,4 @@
+This file is a nested knowledge fixture used to verify original-file downloads, including filenames that contain spaces.
+
+It is not a substitute for Chapter 1 lecture notes.
+The official Chapter 1 materials remain the .docx and .pptx files in this chapter folder.

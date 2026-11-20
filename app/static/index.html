@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CourseAgentAI — Apple-Grade Agentic AI Course Workspace Planner and Deterministic Tool Auditor">
+  <title>CourseAgentAI — Academic Course Workspace Planner & Tool Auditor</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=1.1.3">
+</head>
+<body class="dark-theme auth-locked">
+  <section id="auth-login-screen" class="auth-login-screen hidden" aria-labelledby="auth-login-title">
+    <form id="auth-login-form" class="auth-login-card">
+      <div class="badge badge-accent">Secure Course Access</div>
+      <h1 id="auth-login-title" class="section-title">Sign in to CourseAgentAI</h1>
+      <p class="card-subtitle">Use the account provided by your course administrator.</p>
+      <div class="form-group">
+        <label for="auth-email" class="form-label">Email</label>
+        <input id="auth-email" class="form-input" type="email" autocomplete="username" required maxlength="254">
+      </div>
+      <div class="form-group">
+        <label for="auth-password" class="form-label">Password</label>
+        <input id="auth-password" class="form-input" type="password" autocomplete="current-password" required maxlength="1024">
+      </div>
+      <p id="auth-login-error" class="auth-login-error" role="alert" aria-live="polite"></p>
+      <button id="auth-login-submit" class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+  </section>
+  <div id="app-toast" class="alert-banner hidden" role="alert" aria-live="assertive">
+    <div class="alert-content">
+      <span id="toast-message">Alert</span>
+    </div>
+    <button id="btn-close-toast" class="alert-close" aria-label="Close notification">&times;</button>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar" role="banner">
+    <div class="nav-brand">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CourseAgent<span class="brand-accent">AI</span></span>
+        <span class="brand-tag" id="active-lab-tag">Workspace Planner</span>
+      </div>
+    </div>
+
+    <!-- Top Mode Switcher (Labs 1-8 Segmented Nav) -->
+    <nav class="lab-switcher" role="tablist" aria-label="Application Navigation">
+      <button id="nav-tab-dashboard" class="lab-nav-btn active" role="tab" aria-selected="true" aria-controls="dashboard-view" title="Dashboard">
+        <span class="lab-badge-pill">Home</span> <span class="lab-nav-title">Dashboard</span>
+      </button>
+      <button id="nav-tab-notifications" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="notifications-view" title="Notifications and course announcements">
+        <span class="lab-badge-pill">Inbox</span> <span class="lab-nav-title">Notifications</span>
+        <span id="notifications-unread-badge" class="notification-unread-badge hidden" aria-label="Unread notifications">0</span>
+      </button>
+      <button id="nav-tab-knowledge" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="knowledge-view" title="Knowledge and original notes">
+        <span class="lab-badge-pill">Notes</span> <span class="lab-nav-title">Knowledge</span>
+      </button>
+      <button id="nav-tab-lab1" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab1-view" title="Lab 1: Course Workspace Planner">
+        <span class="lab-badge-pill">L1</span> <span class="lab-nav-title">Planner</span>
+      </button>
+      <button id="nav-tab-lab2" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab2-view" title="Lab 2: Deterministic Tools & Agent Auditor">
+        <span class="lab-badge-pill">L2</span> <span class="lab-nav-title">Tools & Audit</span>
+      </button>
+      <button id="nav-tab-lab3" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab3-view" title="Lab 3: Reusable Skills Center">
+        <span class="lab-badge-pill">L3</span> <span class="lab-nav-title">Skills</span>
+      </button>
+      <button id="nav-tab-lab4" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab4-view" title="Lab 4: Ephemeral Session vs Long-Term Memory">
+        <span class="lab-badge-pill">L4</span> <span class="lab-nav-title">Memory & RAG</span>
+      </button>
+      <button id="nav-tab-lab5" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab5-view" title="Lab 5: MCP Governed Connector & RBAC">
+        <span class="lab-badge-pill">L5</span> <span class="lab-nav-title">Governed Sources</span>
+      </button>
+      <button id="nav-tab-lab6" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab6-view" title="Lab 6: Controlled Runtime & Crash Resume">
+        <span class="lab-badge-pill">L6</span> <span class="lab-nav-title">Runtime & Gates</span>
+      </button>
+      <button id="nav-tab-lab7" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab7-view" title="Lab 7: Agentic Specialist Graph DAG">
+        <span class="lab-badge-pill">L7</span> <span class="lab-nav-title">Node Graph</span>
+      </button>
+      <button id="nav-tab-lab8" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab8-view" title="Lab 8: Parallel Swarm & Dynamic Fan-Out">
+        <span class="lab-badge-pill">L8</span> <span class="lab-nav-title">Parallel Swarm</span>
+      </button>
+      <button id="nav-tab-lab9" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab9-view" title="Lab 9: Deep Research Agent — evidence candidate lookup">
+        <span class="lab-badge-pill">L9</span> <span class="lab-nav-title">Deep Research</span>
+      </button>
+      <button id="nav-tab-lab10" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab10-view" title="Lab 10: Cloud Operations Agent">
+        <span class="lab-badge-pill">L10</span> <span class="lab-nav-title">Cloud Ops</span>
+      </button>
+      <button id="nav-tab-lab11" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab11-view" title="Lab 11: Agentic SDLC Factory — application smoke checks">
+        <span class="lab-badge-pill">L11</span> <span class="lab-nav-title">Agentic SDLC</span>
+      </button>
+      <button id="nav-tab-lab12" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab12-view" title="Lab 12: Safety &amp; Governance — approval and rollback">
+        <span class="lab-badge-pill">L12</span> <span class="lab-nav-title">Governance</span>
+      </button>
+      <button id="nav-tab-lab13" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab13-view" title="Lab 13: Theory, lab, and project specialists">
+        <span class="lab-badge-pill">L13</span> <span class="lab-nav-title">Specialists</span>
+      </button>
+      <button id="nav-tab-lab14" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="lab14-view" title="Lab 14: Persistent course workspace capstone">
+        <span class="lab-badge-pill">L14</span> <span class="lab-nav-title">Capstone</span>
+      </button>
+      <button id="nav-tab-submissions" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="submissions-view" title="GitHub Assignment Submissions & Faculty Review">
+        <span class="lab-badge-pill">GH</span> <span class="lab-nav-title">Submissions</span>
+      </button>
+      <button id="nav-tab-faculty" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="submissions-view" title="Faculty review portal">
+        <span class="lab-badge-pill">Rev</span> <span class="lab-nav-title">Faculty</span>
+      </button>
+      <button id="nav-tab-history" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="history-view" title="Execution history">
+        <span class="lab-badge-pill">Log</span> <span class="lab-nav-title">History</span>
+      </button>
+      <button id="nav-tab-about" class="lab-nav-btn" role="tab" aria-selected="false" aria-controls="about-view" title="About and settings">
+        <span class="lab-badge-pill">i</span> <span class="lab-nav-title">About</span>
+      </button>
+    </nav>
+
+    <div class="nav-actions">
+      <span id="auth-user-label" class="badge badge-neutral" aria-live="polite"></span>
+      <button id="btn-auth-logout" class="btn btn-ghost btn-sm" type="button">Sign out</button>
+      <div class="status-indicator" role="status" aria-live="polite" aria-label="Backend Connection Status">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span id="system-status-text">Backend Connected</span>
+      </div>
+      <button id="btn-audit-drawer" class="btn btn-secondary btn-sm" aria-haspopup="dialog" aria-expanded="false" title="View System Coordinator Execution Trace">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        Audit Log
+      </button>
+      <button id="btn-theme-toggle" class="btn btn-ghost btn-sm" title="Toggle light or dark theme">Theme</button>
+      <button id="btn-reset" class="btn btn-ghost btn-sm" title="Start Fresh Course Request">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+        </svg>
+        New Request
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main id="main-content" class="main-container" role="main">
+
+    <!-- ====================================================================
+         LAB 1 VIEW: WORKSPACE PLANNER (Clarify -> Plan -> Revise)
+         ==================================================================== -->
+    <div id="dashboard-view" role="region" aria-label="CourseAgentAI Dashboard">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">26ECAC401 &bull; Agentic AI</div>
+          <h1 class="hero-title">CourseAgentAI Dashboard</h1>
+          <p class="hero-subtitle">Local academic workspace for nested course notes, student submissions, and 14 progressive Agentic AI lab stages. Implementations range from tested core workflows to clearly labeled simulations and partial demonstrations.</p>
+        </div>
+        <div id="dashboard-health" class="stat-grid" role="status">
+          <div class="stat-tile"><span class="stat-label">Backend</span><strong id="dash-health-status">Checking…</strong></div>
+          <div class="stat-tile"><span class="stat-label">Downloadable notes</span><strong id="dash-file-count">—</strong></div>
+          <div class="stat-tile"><span class="stat-label">Indexed chunks</span><strong id="dash-chunk-count">—</strong></div>
+          <div class="stat-tile"><span class="stat-label">Database</span><strong id="dash-db-status">—</strong></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Laboratories</h2>
+          <p class="card-subtitle">Explore the lab stages and their available local demonstrations. Scope and verification vary by lab; external integrations are not implied.</p>
+        </div>
+        <div class="dash-lab-grid">
+          <button class="dash-lab-card" data-goto="lab1"><strong>Lab 1</strong><span>Agent vs chatbot: clarify, plan, execute, revise</span></button>
+          <button class="dash-lab-card" data-goto="lab2"><strong>Lab 2</strong><span>Typed tools and verified data</span></button>
+          <button class="dash-lab-card" data-goto="lab3"><strong>Lab 3</strong><span>Reusable skills</span></button>
+          <button class="dash-lab-card" data-goto="lab4"><strong>Lab 4</strong><span>Session, memory, retrieval</span></button>
+          <button class="dash-lab-card" data-goto="lab5"><strong>Lab 5</strong><span>Governed connector</span></button>
+          <button class="dash-lab-card" data-goto="lab6"><strong>Lab 6</strong><span>Governed runtime, gates, recovery</span></button>
+          <button class="dash-lab-card" data-goto="lab7"><strong>Lab 7</strong><span>Graph / DAG execution</span></button>
+          <button class="dash-lab-card" data-goto="lab8"><strong>Lab 8</strong><span>Parallel agent swarm</span></button>
+          <button class="dash-lab-card" data-goto="lab9"><strong>Lab 9</strong><span>Deep research: evidence candidate lookup</span></button>
+          <button class="dash-lab-card" data-goto="lab10"><strong>Lab 10</strong><span>Cloud operations: course overview and grade-weight utility</span></button>
+          <button class="dash-lab-card" data-goto="lab11"><strong>Lab 11</strong><span>Agentic SDLC: fixed application smoke checks</span></button>
+          <button class="dash-lab-card" data-goto="lab12"><strong>Lab 12</strong><span>Governance: proposal, approval, and rollback</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div id="notifications-view" class="hidden" role="region" aria-label="Notifications and course announcements">
+      <section class="card">
+        <div class="card-header">
+          <h1 class="card-title">Notifications</h1>
+          <p class="card-subtitle">Private updates for your account and existing announcements for your authorized course.</p>
+        </div>
+        <div class="card-footer">
+          <span id="notifications-unread-summary" class="footer-info" aria-live="polite"></span>
+          <button id="btn-refresh-notifications" class="btn btn-secondary" type="button">Refresh inbox</button>
+        </div>
+        <div id="notifications-error" class="alert-banner hidden" role="alert"></div>
+        <div id="notifications-list" class="inbox-list" aria-live="polite"></div>
+      </section>
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Course announcements</h2>
+          <p class="card-subtitle">Announcements already posted for your course.</p>
+        </div>
+        <div id="announcements-list" class="inbox-list" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div id="knowledge-view" class="hidden" role="region" aria-label="Knowledge and Notes">
+      <section class="card materials-library">
+        <div class="card-header">
+          <div class="badge badge-accent">Course library</div>
+          <h2 class="card-title">Course Materials</h2>
+          <p class="card-subtitle">Browse course files by category and nested folder. Student accounts have read-only access.</p>
+        </div>
+        <div id="cm-category-grid" class="cm-category-grid" aria-label="Material categories"></div>
+        <p id="cm-library-loading" class="empty-state-hint">Loading course materials…</p>
+        <div class="cm-library-toolbar">
+          <label class="form-group">
+            <span class="form-label">Search title or description</span>
+            <input id="cm-search" class="form-input" type="search" placeholder="Search course materials" />
+          </label>
+          <label class="form-group">
+            <span class="form-label">Chapter</span>
+            <select id="cm-chapter-filter" class="form-input">
+              <option value="">All chapters</option>
+              <option value="1">Chapter 1</option><option value="2">Chapter 2</option>
+              <option value="3">Chapter 3</option><option value="4">Chapter 4</option>
+              <option value="5">Chapter 5</option><option value="6">Chapter 6</option>
+              <option value="7">Chapter 7</option><option value="8">Chapter 8</option>
+              <option value="9">Chapter 9</option><option value="10">Chapter 10</option>
+              <option value="11">Chapter 11</option><option value="12">Chapter 12</option>
+              <option value="13">Chapter 13</option><option value="14">Chapter 14</option>
+            </select>
+          </label>
+          <label class="form-group">
+            <span class="form-label">Lab</span>
+            <select id="cm-lab-filter" class="form-input">
+              <option value="">All labs</option>
+              <option value="1">Lab 1</option><option value="2">Lab 2</option>
+              <option value="3">Lab 3</option><option value="4">Lab 4</option>
+              <option value="5">Lab 5</option><option value="6">Lab 6</option>
+              <option value="7">Lab 7</option><option value="8">Lab 8</option>
+              <option value="9">Lab 9</option><option value="10">Lab 10</option>
+              <option value="11">Lab 11</option><option value="12">Lab 12</option>
+              <option value="13">Lab 13</option><option value="14">Lab 14</option>
+            </select>
+          </label>
+          <label class="form-group">
+            <span class="form-label">File type</span>
+            <select id="cm-type-filter" class="form-input">
+              <option value="">All supported types</option>
+              <option value="pdf">PDF</option><option value="docx">DOCX</option>
+              <option value="pptx">PPTX</option><option value="xlsx">XLSX</option>
+              <option value="txt">TXT</option><option value="md">Markdown</option>
+              <option value="png">PNG</option><option value="jpg">JPEG</option>
+            </select>
+          </label>
+        </div>
+        <div id="cm-breadcrumbs" class="cm-breadcrumbs" aria-label="Folder location"></div>
+        <div id="cm-library-error" class="alert-banner hidden" role="alert"></div>
+        <div class="cm-library-layout">
+          <aside class="cm-folder-panel">
+            <h3 class="section-title">Folders</h3>
+            <div id="cm-folder-tree" class="cm-folder-tree"></div>
+            <div id="cm-folder-management" class="cm-folder-management hidden">
+              <label class="form-group">
+                <span class="form-label">Move selected folder under</span>
+                <select id="cm-folder-move-target" class="form-input"></select>
+              </label>
+              <button id="cm-folder-move" class="btn btn-secondary btn-sm" type="button">Move folder</button>
+            </div>
+            <form id="cm-create-folder-form" class="cm-create-folder hidden">
+              <label class="form-group">
+                <span class="form-label">New folder</span>
+                <input id="cm-folder-name" class="form-input" maxlength="120" required placeholder="Folder name" />
+              </label>
+              <button class="btn btn-secondary btn-sm" type="submit">Create folder here</button>
+            </form>
+          </aside>
+          <div class="cm-materials-panel">
+            <div class="cm-materials-heading">
+              <div>
+                <h3 id="cm-current-category" class="section-title">Select a category</h3>
+                <p id="cm-results-count" class="card-subtitle" aria-live="polite"></p>
+              </div>
+              <button id="cm-refresh" class="btn btn-secondary btn-sm" type="button">Refresh</button>
+            </div>
+            <div id="cm-upload-panel" class="cm-upload-panel hidden">
+              <h3 class="section-title">Add course materials</h3>
+              <form id="cm-upload-form">
+                <div class="cm-upload-fields">
+                  <label class="form-group">
+                    <span class="form-label">Category</span>
+                    <select id="cm-upload-category" class="form-input" required></select>
+                  </label>
+                  <label class="form-group">
+                    <span class="form-label">Destination folder</span>
+                    <select id="cm-upload-folder" class="form-input"></select>
+                  </label>
+                  <label class="form-group">
+                    <span class="form-label">Title (single file)</span>
+                    <input id="cm-upload-title" class="form-input" maxlength="200" />
+                  </label>
+                  <label class="form-group">
+                    <span class="form-label">Chapter</span>
+                    <input id="cm-upload-chapter" class="form-input" type="number" min="1" max="14" />
+                  </label>
+                  <label class="form-group">
+                    <span class="form-label">Lab</span>
+                    <input id="cm-upload-lab" class="form-input" type="number" min="1" max="14" />
+                  </label>
+                  <label class="form-group cm-upload-description">
+                    <span class="form-label">Description</span>
+                    <textarea id="cm-upload-description" class="form-input" maxlength="4000" rows="2"></textarea>
+                  </label>
+                  <label class="form-group cm-upload-description">
+                    <span class="form-label">Files (PDF, DOCX, PPTX, XLSX, TXT, MD, or image; up to 10)</span>
+                    <input id="cm-upload-files" class="form-input" type="file" multiple required accept=".pdf,.docx,.pptx,.xlsx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp" />
+                  </label>
+                </div>
+                <button id="cm-upload-submit" class="btn btn-primary" type="submit">Upload materials</button>
+              </form>
+            </div>
+            <div id="cm-materials-list" class="cm-materials-list" aria-live="polite"></div>
+            <div id="cm-material-preview" class="cm-material-preview hidden">
+              <div class="cm-materials-heading">
+                <h3 id="cm-preview-title" class="section-title">Preview</h3>
+                <button id="cm-preview-close" class="btn btn-secondary btn-sm" type="button">Close preview</button>
+              </div>
+              <div id="cm-preview-body"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-header">
+          <div class="badge badge-accent">Original files</div>
+          <h2 class="card-title">Knowledge &amp; Notes</h2>
+          <p class="card-subtitle">Files discovered recursively under the knowledge folder. Download returns the original bytes, not extracted text.</p>
+        </div>
+        <div class="form-group">
+          <label for="knowledge-search-input" class="form-label">Search notes</label>
+          <input id="knowledge-search-input" class="form-input" type="search" placeholder="Filter by filename, folder, or format" />
+        </div>
+        <div class="card-footer">
+          <span id="knowledge-count-label" class="footer-info">Scanning knowledge folder…</span>
+          <button id="btn-refresh-knowledge" class="btn btn-secondary">Refresh</button>
+        </div>
+        <div id="knowledge-empty" class="empty-state-hint hidden">No notes were discovered. Place course files under the knowledge folder, then refresh.</div>
+        <div id="knowledge-error" class="alert-banner hidden" role="alert"></div>
+        <div class="table-wrap">
+          <table class="data-table" aria-label="Discovered knowledge files">
+            <thead>
+              <tr>
+                <th>Chapter / folder</th>
+                <th>File name</th>
+                <th>Relative path</th>
+                <th>Format</th>
+                <th>Size</th>
+                <th>Modified</th>
+                <th>Indexed</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody id="knowledge-files-tbody">
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top:1rem;">
+          <h3 class="card-title">Retrieve from indexed notes</h3>
+          <p class="card-subtitle">If the notes do not establish an answer, the API says so instead of inventing lecture content.</p>
+          <div class="form-group">
+            <label for="knowledge-query-input" class="form-label">Question</label>
+            <input id="knowledge-query-input" class="form-input" placeholder="What is Plan-Act-Observe-Revise?" />
+          </div>
+          <button id="btn-knowledge-search" class="btn btn-primary">Search indexed notes</button>
+          <div id="knowledge-search-results" class="questions-list" style="margin-top:1rem;"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="history-view" class="hidden" role="region" aria-label="History">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Coordinator history</h2>
+          <p class="card-subtitle">Server-side audit events from lab dispatches. This is not a fabricated transcript.</p>
+        </div>
+        <button id="btn-refresh-history" class="btn btn-secondary">Refresh history</button>
+        <div id="history-list" class="audit-timeline" style="margin-top:1rem;"></div>
+      </section>
+    </div>
+
+    <div id="about-view" class="hidden" role="region" aria-label="About and settings">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">About CourseAgentAI</h2>
+          <p class="card-subtitle">Course 26ECAC401 — Agentic AI. Local FastAPI + SQLite demonstration. No paid API is required.</p>
+        </div>
+        <ul class="about-list">
+          <li>Startup: <code>python run.py</code> then open <code>http://127.0.0.1:8000</code></li>
+          <li>Database: <code>app/data/governed_academic.db</code></li>
+          <li>Knowledge root: <code>knowledge/</code></li>
+          <li>Sign-in uses database-backed accounts, Argon2id password hashes, and expiring HttpOnly sessions. Account initialization is an administrator-managed environment-variable command.</li>
+          <li>Submitted GitHub repositories are never executed.</li>
+          <li>Chapters 5–7 folders are not required. Only files that exist on disk are listed.</li>
+        </ul>
+      </section>
+    </div>
+
+    <div id="lab1-view" class="hidden" role="region" aria-label="Course Workspace Planner">
+      <!-- Step Progress Indicator -->
+      <section class="stepper-section" aria-label="Curriculum Planning Steps">
+        <div class="stepper" role="list">
+          <div class="step-item active" id="step-node-1" role="listitem">
+            <div class="step-circle" aria-hidden="true">1</div>
+            <div class="step-label">Faculty Request</div>
+          </div>
+          <div class="step-line" id="step-line-1" aria-hidden="true"></div>
+          <div class="step-item" id="step-node-2" role="listitem">
+            <div class="step-circle" aria-hidden="true">2</div>
+            <div class="step-label">Gap Clarification</div>
+          </div>
+          <div class="step-line" id="step-line-2" aria-hidden="true"></div>
+          <div class="step-item" id="step-node-3" role="listitem">
+            <div class="step-circle" aria-hidden="true">3</div>
+            <div class="step-label">Workspace Plan v1.0</div>
+          </div>
+          <div class="step-line" id="step-line-3" aria-hidden="true"></div>
+          <div class="step-item" id="step-node-4" role="listitem">
+            <div class="step-circle" aria-hidden="true">4</div>
+            <div class="step-label">Revision & Diffs</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Global Alert Banner -->
+      <div id="global-alert" class="alert-banner hidden" role="alert" aria-live="assertive">
+        <div class="alert-content">
+          <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="alert-message">Alert message</span>
+        </div>
+        <button id="btn-close-alert" class="alert-close" aria-label="Close Alert">&times;</button>
+      </div>
+
+      <!-- SCREEN 1: Faculty Request Input -->
+      <section id="screen-request" class="view-screen active" aria-labelledby="screen-request-title">
+        <div class="card hero-card">
+          <div class="card-header">
+            <div class="badge badge-accent">Course Workspace &bull; Step 1 of 4: Request</div>
+            <h1 id="screen-request-title" class="hero-title">Course Workspace Planner</h1>
+            <p class="hero-subtitle">
+              Describe what you want to build. The agent analyzes requirements across schedule pacing, 
+              learning materials, programming assignments, and grading policies, then interacts to produce a verified syllabus.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-input" class="form-label">
+              Course Vision & Pedagogical Goals
+              <span id="prompt-input-hint" class="label-hint">Describe the course topic, target cohort, pacing, and core project deliverable.</span>
+            </label>
+            <textarea 
+              id="prompt-input" 
+              class="form-textarea" 
+              rows="4" 
+              aria-describedby="prompt-input-hint"
+              placeholder="I want to organize a comprehensive course workspace for 26ECAC401 (Agentic AI) covering Chapter 1 foundations, autonomous loops (Plan-Act-Observe-Revise), and reasoning strategies."
+            ></textarea>
+          </div>
+
+          <!-- Pre-loaded Evaluator Scenarios -->
+          <div class="scenarios-container">
+            <span class="scenarios-title">Quick Evaluator Scenarios:</span>
+            <div id="scenarios-chips" class="chips-row" role="group" aria-label="Preset Evaluator Scenarios">
+              <button class="chip-btn" data-scenario="scenario-agentic-foundations">Agentic AI Foundations & Reasoning</button>
+              <button class="chip-btn" data-scenario="scenario-agent-frameworks-tools">Frameworks, Tools & Memory</button>
+              <button class="chip-btn" data-scenario="scenario-agentic-capstone">Autonomous Agent Capstone</button>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="footer-info">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Triggers real gap analysis to generate at least two targeted clarification questions.</span>
+            </div>
+            <button id="btn-analyze-request" class="btn btn-primary btn-lg">
+              <span class="btn-text">Analyze Request</span>
+              <span class="spinner hidden" id="spinner-analyze" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: Clarification Questions -->
+      <section id="screen-clarification" class="view-screen hidden" aria-labelledby="screen-clarification-title">
+        <div class="card">
+          <div class="card-header">
+            <div class="header-row">
+              <div>
+                <div class="badge badge-warning">Course Workspace &bull; Step 2 of 4: Clarify</div>
+                <h2 id="screen-clarification-title" class="card-title">Missing Information Detected</h2>
+              </div>
+              <span id="questions-count-badge" class="badge badge-neutral" role="status">Questions</span>
+            </div>
+            <p class="card-subtitle">
+              The agent detected underspecified requirements in your prompt. Answer the missing course questions to anchor parameters before plan synthesis.
+            </p>
+          </div>
+
+          <div id="questions-list" class="questions-list" role="region" aria-live="polite" aria-label="Clarification Questions List">
+            <!-- Dynamically populated from backend /api/lab1/clarify -->
+          </div>
+
+          <div class="card-footer">
+            <button id="btn-back-to-request" class="btn btn-secondary">
+              &larr; Modify Request
+            </button>
+            <button id="btn-generate-plan" class="btn btn-primary btn-lg">
+              <span class="btn-text">Synthesize Course Plan v1.0</span>
+              <span class="spinner hidden" id="spinner-generate" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: Plan Viewer, SCREEN 4: Revisions, SCREEN 5: Version History, SCREEN 6: Diffs, SCREEN 7: Action Trace -->
+      <section id="screen-plan" class="view-screen hidden" aria-labelledby="plan-course-name">
+        <!-- Plan Header Banner -->
+        <div class="plan-header-card card">
+          <div class="plan-header-top">
+            <div class="plan-identity">
+              <div class="code-and-version">
+                <span id="plan-course-code" class="plan-code">26ECAC401</span>
+                
+                <!-- Version Pills / Selector -->
+                <div class="version-pills-wrap" role="group" aria-label="Plan Version Selector">
+                  <span class="version-label">Version History:</span>
+                  <div id="version-pills-list" class="version-pills-list">
+                    <!-- Dynamically populated with v1.0, v1.1, etc. -->
+                  </div>
+                </div>
+              </div>
+              <h2 id="plan-course-name" class="plan-title">Course Plan</h2>
+            </div>
+
+            <div class="plan-quick-stats" role="group" aria-label="Course Core Metrics">
+              <div class="stat-pill">
+                <span class="stat-label">Duration</span>
+                <span id="stat-duration" class="stat-value">-- Weeks</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Deliverables</span>
+                <span id="stat-assignments-count" class="stat-value">-- Labs/HW</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">TA Staffing</span>
+                <span id="stat-ta-hours" class="stat-value">-- hrs/wk</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Grade Balance</span>
+                <span id="stat-grade-balance" class="stat-value">100.0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar Navigation Tabs -->
+          <div class="plan-tabs" role="tablist" aria-label="Course Workspace Sections">
+            <button class="plan-tab-btn active" data-tab="tab-overview" role="tab" aria-selected="true" aria-controls="tab-overview">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Overview & Milestones
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-materials" role="tab" aria-selected="false" aria-controls="tab-materials">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              Notes & Materials (<span id="tab-materials-count">0</span>)
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-assignments" role="tab" aria-selected="false" aria-controls="tab-assignments">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              Assignments & Rubrics (<span id="tab-assignments-count">0</span>)
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-grades" role="tab" aria-selected="false" aria-controls="tab-grades">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+              Grades & Policies (100%)
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-diffs" id="tab-btn-diffs" role="tab" aria-selected="false" aria-controls="tab-diffs">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              Structured Diffs (<span id="diffs-badge-count">0</span>)
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-history" id="tab-btn-history" role="tab" aria-selected="false" aria-controls="tab-history">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              Version History
+            </button>
+            <button class="plan-tab-btn" data-tab="tab-actiontrace" id="tab-btn-actiontrace" role="tab" aria-selected="false" aria-controls="tab-actiontrace">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Action Trace (<span id="action-trace-count">0</span>)
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab Content 1: Overview -->
+        <div id="tab-overview" class="tab-pane active" role="tabpanel" aria-labelledby="tab-overview">
+          <div class="grid-2col">
+            <div class="card">
+              <h3 class="section-title">Course Description & Goals</h3>
+              <p id="plan-description" class="plan-desc-text">Course description...</p>
+              
+              <h4 class="subsection-title">Target Audience</h4>
+              <p id="plan-audience" class="plan-audience-text">Target audience...</p>
+
+              <h4 class="subsection-title">Prerequisites</h4>
+              <ul id="plan-prereqs-list" class="styled-list"></ul>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Key Course Milestones</h3>
+              <div id="plan-milestones-list" class="milestones-timeline"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 2: Notes & Materials -->
+        <div id="tab-materials" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-materials">
+          <div id="materials-container" class="materials-grid" role="region" aria-label="Course Notes and Materials Grid">
+            <!-- Dynamically populated from plan.materials_and_notes -->
+          </div>
+        </div>
+
+        <!-- Tab Content 3: Assignments & Rubrics -->
+        <div id="tab-assignments" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-assignments">
+          <div id="assignments-container" class="assignments-grid" role="region" aria-label="Assignments and Rubrics Grid">
+            <!-- Dynamically populated from plan.assignments -->
+          </div>
+        </div>
+
+        <!-- Tab Content 4: Grades & Policies -->
+        <div id="tab-grades" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-grades">
+          <div class="card">
+            <div class="card-header">
+              <div class="header-row">
+                <h3 class="section-title">Grade Distribution (Sum = 100.0%)</h3>
+                <span id="grade-total-badge" class="badge badge-success" role="status">Total: 100.0%</span>
+              </div>
+              <p class="card-subtitle">Exact mathematical breakdown of assessment components verified against grading constraints.</p>
+            </div>
+            <div id="grades-container" class="grades-table-wrap" role="region" aria-label="Grade Distribution Breakdown">
+              <!-- Dynamically populated from plan.grade_breakdown -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 5: Structured Diffs -->
+        <div id="tab-diffs" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-btn-diffs">
+          <div class="card">
+            <div class="card-header">
+              <div class="header-row">
+                <h3 class="section-title">Exact Structured Diffs (v<span id="diff-prev-ver">1.0</span> &rarr; v<span id="diff-curr-ver">1.1</span>)</h3>
+                <span id="diffs-summary-tag" class="badge badge-accent">Calculated from actual plan objects</span>
+              </div>
+              <p id="changelog-summary-text" class="changelog-summary">No revision diffs generated yet. Submit a revision below to see structured changes.</p>
+            </div>
+
+            <div id="diffs-list" class="diffs-container" role="region" aria-label="Structured Field Diffs List">
+              <!-- Dynamically populated from revision.structured_diffs -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 6: Version History -->
+        <div id="tab-history" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-btn-history">
+          <div class="card">
+            <div class="card-header">
+              <div class="header-row">
+                <h3 class="section-title">Course Workspace Version History</h3>
+                <span id="versions-count-badge" class="badge badge-accent" role="status">1 Version</span>
+              </div>
+              <p class="card-subtitle">
+                All generated versions are permanently preserved in the repository. Prior versions (v1.0) remain completely immutable.
+              </p>
+            </div>
+            <div id="version-history-timeline" class="version-history-timeline" role="region" aria-label="Immutable Version History Timeline">
+              <!-- Dynamically populated from /api/lab1/history/{plan_id} -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 7: Action Trace Timeline -->
+        <div id="tab-actiontrace" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-btn-actiontrace">
+          <div class="card">
+            <div class="card-header">
+              <div class="header-row">
+                <h3 class="section-title">Auditable Action Trace</h3>
+                <span class="badge badge-neutral">No Private CoT</span>
+              </div>
+              <p class="card-subtitle">
+                Step-by-step verified action trail documenting request parsing, gap detection, plan generation, and revision diffing.
+              </p>
+            </div>
+            <div id="action-trace-list" class="action-trace-timeline" role="region" aria-live="polite" aria-label="Auditable Action Trace Timeline">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 4: Natural Language Revision Box -->
+        <div class="card revision-card" role="region" aria-labelledby="revision-card-title">
+          <div class="card-header">
+            <div class="badge badge-accent">Course Workspace &bull; Step 4 of 4: Revise</div>
+            <h3 id="revision-card-title" class="card-title">Revise Course Plan</h3>
+            <p class="card-subtitle">
+              Tell the agent what you want changed. Submit feedback to adjust pacing, add programming labs, reschedule deliverables, or rebalance grading weights.
+              Revisions produce an immutable new version with field-level diff calculation.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="revision-prompt-input" class="form-label">
+              Natural Language Revision Feedback
+              <span id="revision-prompt-hint" class="label-hint">Provide instructions for modifications across schedule, labs, materials, or weights.</span>
+            </label>
+            <textarea 
+              id="revision-prompt-input" 
+              class="form-textarea" 
+              rows="3" 
+              aria-describedby="revision-prompt-hint"
+              placeholder="Change the course to 12 weeks, add one additional programming lab, and increase the final project weight by 5 percentage points."
+            ></textarea>
+          </div>
+
+          <!-- Quick Revision Suggestions -->
+          <div class="scenarios-container">
+            <span class="scenarios-title">Evaluator Quick Revision Prompts:</span>
+            <div class="chips-row" role="group" aria-label="Preset Revision Prompts">
+              <button class="chip-btn chip-rev" data-prompt="Change the course to 12 weeks, add one additional programming lab, and increase the final project weight by 5 percentage points.">
+                +2 Weeks, +1 Lab, +5% Project Weight
+              </button>
+              <button class="chip-btn chip-rev" data-prompt="Add an AI ethics and algorithmic bias module to Week 5 and add peer code review to assignments.">
+                +Ethics Module (W5) & Peer Review
+              </button>
+              <button class="chip-btn chip-rev" data-prompt="Set the final project weight to 40% and increase TA allocation to 20 hours.">
+                40% Project & 20h TA Staffing
+              </button>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="footer-info">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>Creates v<span id="next-version-preview">1.1</span> with exact structured diffs without overwriting v1.0.</span>
+            </div>
+            <button id="btn-submit-revision" class="btn btn-primary btn-lg">
+              <span class="btn-text">Apply Revision</span>
+              <span class="spinner hidden" id="spinner-revise" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 2 VIEW: TOOL-USING AGENT & TRACE AUDITOR
+         ==================================================================== -->
+    <div id="lab2-view" class="hidden" role="region" aria-label="Tool-Using Agent and Trace Auditor">
+      <!-- Hero / Query Input Section -->
+      <section class="card hero-card" aria-labelledby="lab2-hero-title">
+        <div class="card-header">
+          <div class="header-row">
+            <div>
+              <div class="badge badge-accent">Auditor Workspace &bull; Tool & Agent Auditor</div>
+              <h1 id="lab2-hero-title" class="hero-title">Tool-Using Agent & Trace Auditor</h1>
+            </div>
+            <div class="lab2-header-actions">
+              <button id="btn-lab2-view-tools" class="btn btn-secondary btn-sm" aria-haspopup="dialog" aria-expanded="false" title="View Registered Typed Tools">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                Tools Catalog (9)
+              </button>
+              <button id="btn-lab2-open-sandbox" class="btn btn-secondary btn-sm" aria-haspopup="dialog" aria-expanded="false" title="Direct Tool Sandbox">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                Tool Sandbox
+              </button>
+            </div>
+          </div>
+          <p class="hero-subtitle">
+            Ask the auditor a course question. The agent dynamically routes to registered typed tools,
+            enforces strict schema validation, and produces transparent multi-step traces backed exclusively by verified facts.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="lab2-query-input" class="form-label">
+            Faculty / Auditor Inquiry
+            <span id="lab2-query-hint" class="label-hint">Ask about grading validity, rubric standards, TA staffing capacity, or lecture notes.</span>
+          </label>
+          <div class="form-row">
+            <label for="lab2-course-select" class="form-label">Authorized course</label>
+            <select id="lab2-course-select" class="form-select" aria-label="Lab 2 course"></select>
+            <label for="lab2-assignment-select" class="form-label">Assignment (for assignment or rubric questions)</label>
+            <select id="lab2-assignment-select" class="form-select">
+              <option value="">Select a course assignment</option>
+            </select>
+          </div>
+          <textarea
+            id="lab2-query-input"
+            class="form-textarea"
+            rows="3"
+            aria-describedby="lab2-query-hint"
+            placeholder="Search 26ECAC401 notes for ReAct and Plan-Act-Observe-Revise agent architecture..."
+          ></textarea>
+        </div>
+
+        <!-- Evaluator Scenarios -->
+        <div class="scenarios-container">
+          <span class="scenarios-title">Official Evaluator Scenarios:</span>
+          <div id="lab2-scenarios-chips" class="chips-row" role="group" aria-label="Official Evaluator Scenarios">
+            <!-- Dynamically populated from /api/lab2/scenarios -->
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-info">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Bounded execution loop with zero private chain-of-thought tokens.</span>
+          </div>
+          <button id="btn-lab2-run-query" class="btn btn-primary btn-lg">
+            <span class="btn-text">Execute Tool Agent</span>
+            <span class="spinner hidden" id="spinner-lab2-run" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Results: Side-by-Side Trace & Verified Facts -->
+      <section id="lab2-results-container" class="lab2-results-section hidden" role="region" aria-label="Tool Agent Execution Results">
+        <!-- Quick Stats Banner -->
+        <div class="lab2-stats-banner card" role="group" aria-label="Execution Summary Metrics">
+          <div class="stat-pill">
+            <span class="stat-label">Execution Status</span>
+            <span id="lab2-stat-status" class="stat-value text-success">SUCCESS</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Tools Executed</span>
+            <span id="lab2-stat-tools-count" class="stat-value">2 Calls</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Verified Facts</span>
+            <span id="lab2-stat-facts-count" class="stat-value">5 Confirmed</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Total Duration</span>
+            <span id="lab2-stat-duration" class="stat-value">0.4 ms</span>
+          </div>
+        </div>
+
+        <div class="lab2-split-grid">
+          <!-- LEFT COLUMN: Multi-Step Auditable Execution Trace -->
+          <div class="card lab2-trace-card">
+            <div class="card-header">
+              <div class="header-row">
+                <div>
+                  <div class="badge badge-accent">Observable Execution Trace</div>
+                  <h3 class="section-title">Step-by-Step Tool Invocations</h3>
+                </div>
+                <span id="lab2-steps-badge" class="badge badge-neutral" role="status">2 Steps</span>
+              </div>
+              <p class="card-subtitle">Watch which tools the agent uses. Every step is strictly audited with validated inputs, outputs, timing, and rationale.</p>
+            </div>
+
+            <div id="lab2-trace-steps-list" class="lab2-steps-timeline" role="region" aria-live="polite" aria-label="Step-by-Step Tool Trace">
+              <!-- Dynamically populated from trace.steps -->
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Final Conclusion & Verified Facts -->
+          <div class="lab2-conclusion-column">
+            <!-- Authoritative Final Conclusion -->
+            <div class="card lab2-conclusion-card" role="region" aria-labelledby="lab2-conclusion-title">
+              <div class="card-header">
+                <div class="badge badge-success">Authoritative Conclusion</div>
+                <h3 id="lab2-conclusion-title" class="section-title">Auditor Summary</h3>
+              </div>
+              <div class="conclusion-content">
+                <p id="lab2-final-conclusion" class="conclusion-text">
+                  <!-- Dynamically populated from trace.final_conclusion -->
+                </p>
+              </div>
+            </div>
+
+            <!-- Verified Facts Board -->
+            <div class="card lab2-facts-card" role="region" aria-labelledby="lab2-facts-title">
+              <div class="card-header">
+                <div class="header-row">
+                  <h3 id="lab2-facts-title" class="section-title">Verified Domain Facts</h3>
+                  <span class="badge badge-neutral">Tool-Backed Only</span>
+                </div>
+                <p class="card-subtitle">Review verified evidence. Zero hallucination: Only data confirmed by tool execution is recorded here.</p>
+              </div>
+              <div id="lab2-verified-facts-list" class="verified-facts-grid" role="region" aria-label="Verified Domain Facts List">
+                <!-- Dynamically populated from trace.verified_facts -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 3 VIEW: REUSABLE SKILLS (Planning, Research, Formatting)
+         ==================================================================== -->
+    <div id="lab3-view" class="hidden" role="region" aria-label="Lab 3 Reusable Skills">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 3 &bull; Modular Skill Composition</div>
+          <h1 class="hero-title">Reusable Agent Skills Center</h1>
+          <p class="hero-subtitle">
+            Stateless, schema-typed capabilities with strict input/output contracts.
+            Inspect declarative schemas, test direct skill sandboxes, or let the orchestrator route requests.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="lab3-query-input" class="form-label">
+            Natural Language Agent Task
+            <span class="label-hint">The Skill-Using Agent parses your intent and chains Planning, Research, and Formatting skills.</span>
+          </label>
+          <textarea 
+            id="lab3-query-input" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="Create a 14-week course plan for 26ECAC401 with research on ReAct loop and format as a student handout..."
+          ></textarea>
+        </div>
+
+        <div class="scenarios-container">
+          <span class="scenarios-title">Official Evaluator Scenarios:</span>
+          <div id="lab3-scenarios-chips" class="chips-row" role="group" aria-label="Lab 3 Evaluator Scenarios">
+            <!-- Dynamically populated from /api/lab3/scenarios -->
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-info">
+            <span class="badge badge-neutral">Skills: PlanningSkill &bull; ResearchSkill &bull; FormattingSkill</span>
+          </div>
+          <button id="btn-lab3-run-agent" class="btn btn-primary btn-lg">
+            <span class="btn-text">Execute Skill Agent</span>
+            <span class="spinner hidden" id="spinner-lab3-run" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Registered Skills Catalog & Direct Sandbox -->
+      <section class="card">
+        <div class="card-header">
+          <div class="header-row">
+            <div>
+              <div class="badge badge-neutral">Declarative Skill Registry</div>
+              <h3 class="section-title">Skill Catalog & Direct Sandbox</h3>
+            </div>
+            <button id="btn-lab3-refresh-skills" class="btn btn-secondary btn-sm">Refresh Catalog</button>
+          </div>
+          <p class="card-subtitle">Directly execute individual skills with JSON parameters or inspect their Pydantic schemas.</p>
+        </div>
+        <div id="lab3-skills-catalog-grid" class="skills-catalog-grid">
+          <!-- Dynamically populated from /api/lab3/skills -->
+        </div>
+
+        <!-- Direct Sandbox Box -->
+        <div class="lab-subcard">
+          <h4 class="subcard-title">Direct Skill Sandbox Runner</h4>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label for="lab3-sandbox-select" class="form-label">Select Skill</label>
+              <select id="lab3-sandbox-select" class="form-select">
+                <option value="planning_skill">PlanningSkill (Course Pacing & Units)</option>
+                <option value="research_skill">ResearchSkill (Ch 1-4 Knowledge Notes)</option>
+                <option value="formatting_skill">FormattingSkill (Handout / Brief / Schedule)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="lab3-sandbox-params" class="form-label">Input Parameters (JSON)</label>
+              <textarea id="lab3-sandbox-params" class="form-textarea font-mono" rows="4"></textarea>
+            </div>
+          </div>
+          <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+            <button id="btn-lab3-run-sandbox" class="btn btn-secondary">
+              <span>Execute Sandbox Skill</span>
+              <span class="spinner hidden" id="spinner-lab3-sandbox" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div style="margin-top: 1rem;">
+            <label class="form-label">Execution Record Output</label>
+            <pre id="lab3-sandbox-result-pre" class="code-block json-viewer">Select a skill and click "Execute Sandbox Skill".</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lab 3 Agent Results Container -->
+      <section id="lab3-results-container" class="hidden">
+        <div class="lab2-stats-banner card">
+          <div class="stat-pill">
+            <span class="stat-label">Agent Status</span>
+            <span id="lab3-stat-status" class="stat-value text-success">SUCCESS</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Skills Executed</span>
+            <span id="lab3-stat-skills-count" class="stat-value">3 Skills</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Total Duration</span>
+            <span id="lab3-stat-duration" class="stat-value">0.8 ms</span>
+          </div>
+        </div>
+
+        <div class="lab2-split-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="section-title">Step-by-Step Skill Execution Chain</h3>
+              <p class="card-subtitle">Audited record of every invoked skill with validated input and output contracts.</p>
+            </div>
+            <div id="lab3-skill-steps-list" class="lab2-steps-timeline"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="section-title">Final Formatted Deliverable</h3>
+              <p class="card-subtitle">Synthesized output generated from skill execution.</p>
+            </div>
+            <div id="lab3-final-formatted-output" class="markdown-preview-box"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 4 VIEW: EPHEMERAL SESSION VS LONG-TERM KNOWLEDGE
+         ==================================================================== -->
+    <div id="lab4-view" class="hidden" role="region" aria-label="Lab 4 Memory and Retrieval">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 4 &bull; Dual-Tier Cognitive Architecture</div>
+          <h1 class="hero-title">Memory & Grounded Knowledge Retrieval</h1>
+          <p class="hero-subtitle">
+            Strict separation: Ephemeral short-term session conversation & working scratchpad vs immutable long-term course knowledge from Chapters 1–4.
+          </p>
+        </div>
+
+        <!-- Integrated Agent Search Query -->
+        <div class="form-group">
+          <label for="lab4-agent-query-input" class="form-label">
+            Contextual Course Query (Uses Session Context + Long-Term RAG)
+          </label>
+          <div class="flex-row gap-2">
+            <input 
+              id="lab4-agent-query-input" 
+              class="form-input" 
+              placeholder="Explain how Plan-Act-Observe-Revise loop differs from standard single-step prompting..."
+            />
+            <button id="btn-lab4-run-agent" class="btn btn-primary">
+              <span>Ask Memory Agent</span>
+              <span class="spinner hidden" id="spinner-lab4-agent" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dual Panel Split -->
+      <div class="grid-2col">
+        <!-- Panel 1: Ephemeral Short-Term Session -->
+        <div class="card">
+          <div class="card-header">
+            <div class="header-row">
+              <div>
+                <div class="badge badge-neutral">Tier 1: Ephemeral</div>
+                <h3 class="section-title">Short-Term Session Memory</h3>
+              </div>
+              <button id="btn-lab4-new-session" class="btn btn-ghost btn-sm">New Session</button>
+            </div>
+            <p class="card-subtitle">Session-scoped conversation history and key-value scratchpad.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="lab4-session-id-input" class="form-label">Active Session ID</label>
+            <input id="lab4-session-id-input" class="form-input font-mono" value="" placeholder="Created for your account when Lab 4 opens" />
+          </div>
+
+          <!-- Add User Turn -->
+          <div class="lab-subcard">
+            <h4 class="subcard-title">Add Message Turn</h4>
+            <div class="grid-2col" style="gap: 0.5rem;">
+              <select id="lab4-turn-role" class="form-select">
+                <option value="user">User</option>
+                <option value="assistant">Assistant</option>
+              </select>
+              <input id="lab4-turn-content" class="form-input" placeholder="Message content..." />
+            </div>
+            <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
+              <button id="btn-lab4-add-turn" class="btn btn-secondary btn-sm">Append Turn</button>
+            </div>
+          </div>
+
+          <!-- Working Scratchpad -->
+          <div class="lab-subcard" style="margin-top: 1rem;">
+            <h4 class="subcard-title">Working Scratchpad (KV Store)</h4>
+            <div class="grid-2col" style="gap: 0.5rem;">
+              <input id="lab4-scratch-key" class="form-input" placeholder="Key (e.g. current_topic)" />
+              <input id="lab4-scratch-val" class="form-input" placeholder="Value (e.g. Plan-Act Loop)" />
+            </div>
+            <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
+              <button id="btn-lab4-set-scratch" class="btn btn-secondary btn-sm">Set Scratchpad</button>
+            </div>
+          </div>
+
+          <!-- Live Session Viewer -->
+          <div style="margin-top: 1rem;">
+            <div class="header-row">
+              <label class="form-label">Current Session State</label>
+              <button id="btn-lab4-refresh-session" class="btn btn-ghost btn-sm">Refresh</button>
+            </div>
+            <pre id="lab4-session-view-pre" class="code-block json-viewer" style="max-height: 220px;">Session initialized.</pre>
+          </div>
+        </div>
+
+        <!-- Panel 2: Long-Term Stored Knowledge -->
+        <div class="card">
+          <div class="card-header">
+            <div class="header-row">
+              <div>
+                <div class="badge badge-accent">Tier 2: Grounded RAG</div>
+                <h3 class="section-title">Long-Term Knowledge Store</h3>
+              </div>
+              <span id="lab4-chunk-count-badge" class="badge badge-neutral">26ECAC401 Indexed</span>
+            </div>
+            <p class="card-subtitle">Search lecture notes across Chapters 1-4 with provenance verification.</p>
+          </div>
+
+          <div class="grid-2col" style="gap: 0.5rem;">
+            <div class="form-group">
+              <label for="lab4-rag-chapter-select" class="form-label">Filter by Chapter</label>
+              <select id="lab4-rag-chapter-select" class="form-select">
+                <option value="">All Chapters (1–4)</option>
+                <option value="1">Chapter 1: Foundations & Reasoning</option>
+                <option value="2">Chapter 2: Function Calling & ReAct</option>
+                <option value="3">Chapter 3: Multi-Agent Architectures</option>
+                <option value="4">Chapter 4: Safety, Governance & Alignment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="lab4-rag-query-input" class="form-label">Search Query</label>
+              <input id="lab4-rag-query-input" class="form-input" placeholder="e.g. ReAct loop, Memory types..." />
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+            <button id="btn-lab4-search-rag" class="btn btn-primary">
+              <span>Search Long-Term Knowledge</span>
+              <span class="spinner hidden" id="spinner-lab4-rag" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <!-- Retrieved Chunks Container -->
+          <div id="lab4-rag-results-container" class="rag-results-list">
+            <div class="empty-state-hint">Enter a search query or click "Ask Memory Agent".</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Response Box -->
+      <section id="lab4-agent-response-box" class="card hidden" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <div class="badge badge-success">Memory-Aware Response</div>
+          <h3 class="section-title">Synthesized Answer & Provenance</h3>
+        </div>
+        <div id="lab4-agent-response-content" class="markdown-preview-box"></div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 5 VIEW: MCP-STYLE GOVERNED CONNECTOR
+         ==================================================================== -->
+    <div id="lab5-view" class="hidden" role="region" aria-label="Lab 5 Governed Connector">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 5 &bull; MCP-Inspired Security & RBAC</div>
+          <h1 class="hero-title">Governed Academic Data Connector</h1>
+          <p class="hero-subtitle">
+            Unified, governed interface across Lecture Notes, SQLite Database, File Store, and Registrar API.
+            Strict role-based access control (RBAC) blocks unauthorized student mutations while granting faculty administrative rights.
+          </p>
+        </div>
+
+        <!-- Registered Sources Status Grid -->
+        <div class="sources-status-grid">
+          <div class="source-status-card">
+            <div class="source-icon">📚</div>
+            <div class="source-info">
+              <div class="source-title">notes_source</div>
+              <div class="source-type">Knowledge Notes (Ch 1-4)</div>
+            </div>
+            <span class="badge badge-success">ONLINE</span>
+          </div>
+          <div class="source-status-card">
+            <div class="source-icon">💾</div>
+            <div class="source-info">
+              <div class="source-title">sqlite_source</div>
+              <div class="source-type">SQLite Course DB</div>
+            </div>
+            <span class="badge badge-success">ONLINE</span>
+          </div>
+          <div class="source-status-card">
+            <div class="source-icon">📁</div>
+            <div class="source-info">
+              <div class="source-title">file_source</div>
+              <div class="source-type">Laboratory Worklets & Files</div>
+            </div>
+            <span class="badge badge-success">ONLINE</span>
+          </div>
+          <div class="source-status-card">
+            <div class="source-icon">🌐</div>
+            <div class="source-info">
+              <div class="source-title">academic_api_source</div>
+              <div class="source-type">Registrar Catalog API</div>
+            </div>
+            <span class="badge badge-success">ONLINE</span>
+          </div>
+        </div>
+
+        <!-- Quick Evaluator Scenarios -->
+        <div class="scenarios-container">
+          <span class="scenarios-title">Pre-Configured RBAC Scenarios:</span>
+          <div id="lab5-scenarios-chips" class="chips-row">
+            <!-- Dynamically populated from /api/lab5/scenarios -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Governed Operation Console -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Governed Operation Dispatcher</h3>
+          <p class="card-subtitle">Dispatch typed operations through the governance boundary. Every request is audited.</p>
+        </div>
+
+        <div class="grid-4col">
+          <div class="form-group">
+            <label for="lab5-source-select" class="form-label">Data Source</label>
+            <select id="lab5-source-select" class="form-select">
+              <option value="notes_source">notes_source (Lecture Notes)</option>
+              <option value="sqlite_source">sqlite_source (SQLite DB)</option>
+              <option value="file_source">file_source (File Storage)</option>
+              <option value="academic_api_source">academic_api_source (Registrar API)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lab5-op-select" class="form-label">Operation</label>
+            <select id="lab5-op-select" class="form-select">
+              <option value="SEARCH">SEARCH</option>
+              <option value="READ">READ</option>
+              <option value="WRITE">WRITE (Mutating)</option>
+              <option value="LIST">LIST</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lab5-role-select" class="form-label">Client Role</label>
+            <select id="lab5-role-select" class="form-select">
+              <option value="STUDENT">STUDENT (Read-Only)</option>
+              <option value="TA">TA (Teaching Assistant)</option>
+              <option value="FACULTY">FACULTY (Course Lead)</option>
+              <option value="ADMIN">ADMIN (System Administrator)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lab5-resource-input" class="form-label">Resource Path</label>
+            <input id="lab5-resource-input" class="form-input font-mono" value="assignments" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lab5-params-input" class="form-label">Parameters (JSON)</label>
+          <textarea id="lab5-params-input" class="form-textarea font-mono" rows="3">{"query": "autonomous agents", "course_id": "26ECAC401"}</textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+          <button id="btn-lab5-dispatch" class="btn btn-primary">
+            <span>Dispatch Governed Operation</span>
+            <span class="spinner hidden" id="spinner-lab5-dispatch" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <!-- Result Box -->
+        <div style="margin-top: 1.5rem;">
+          <label class="form-label">Connector Response Envelope</label>
+          <pre id="lab5-result-pre" class="code-block json-viewer">Select source and dispatch operation to view response.</pre>
+        </div>
+      </section>
+
+      <!-- Audit Log Drawer / Table -->
+      <section class="card">
+        <div class="card-header">
+          <div class="header-row">
+            <h3 class="section-title">Real-Time Connector Audit Log</h3>
+            <button id="btn-lab5-refresh-audit" class="btn btn-secondary btn-sm">Refresh Audit</button>
+          </div>
+          <p class="card-subtitle">Persistent audit trail of all connector interactions with role enforcement records.</p>
+        </div>
+        <div id="lab5-audit-table-container" class="audit-table-wrapper">
+          <!-- Dynamically populated from /api/lab5/audit -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 6 VIEW: CONTROLLED AGENT RUNTIME
+         ==================================================================== -->
+    <div id="lab6-view" class="hidden" role="region" aria-label="Lab 6 Controlled Runtime">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 6 &bull; Resilience & Checkpointing</div>
+          <h1 class="hero-title">Controlled Agent Runtime & Gates</h1>
+          <p class="hero-subtitle">
+            Budget-bounded execution loop, state checkpointing after every step, human-in-the-loop approval gates, and mid-run crash recovery simulation.
+          </p>
+        </div>
+
+        <!-- Run Creator -->
+        <div class="grid-3col">
+          <div class="form-group" style="grid-column: span 2;">
+            <label for="lab6-task-input" class="form-label">Runtime Task Request</label>
+            <input 
+              id="lab6-task-input" 
+              class="form-input" 
+              value="Synthesize 14-week 26ECAC401 workspace plan and publish final syllabus"
+            />
+          </div>
+          <div class="form-group">
+            <label for="lab6-budget-steps" class="form-label">Max Budget Steps (1-10)</label>
+            <input id="lab6-budget-steps" type="number" class="form-input" min="1" max="10" value="6" />
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-info">
+            <span id="lab6-active-run-pill" class="badge badge-neutral">No Active Run</span>
+          </div>
+          <button id="btn-lab6-start-run" class="btn btn-primary">
+            <span>Start Controlled Run</span>
+            <span class="spinner hidden" id="spinner-lab6-start" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Run Controller -->
+      <section id="lab6-run-controller-card" class="card hidden">
+        <div class="card-header">
+          <div class="header-row">
+            <div>
+              <div class="badge badge-accent">Active Runtime Execution</div>
+              <h3 id="lab6-run-title" class="section-title">Run Control Panel</h3>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="lab6-run-status-badge" class="badge badge-neutral">INITIALIZED</span>
+              <button id="btn-lab6-step" class="btn btn-secondary btn-sm">Execute Next Step</button>
+              <button id="btn-lab6-crash" class="btn btn-danger btn-sm">Simulate Crash 💥</button>
+              <button id="btn-lab6-resume" class="btn btn-success btn-sm">Resume from Checkpoint 🔄</button>
+            </div>
+          </div>
+          <p class="card-subtitle">Control step execution, inspect serialized checkpoints, or inject crash faults.</p>
+        </div>
+
+        <!-- Budget & Status Banner -->
+        <div class="lab2-stats-banner" style="margin-bottom: 1.5rem;">
+          <div class="stat-pill">
+            <span class="stat-label">Steps Consumed</span>
+            <span id="lab6-stat-steps" class="stat-value">0 / 6</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Approval Gate</span>
+            <span id="lab6-stat-gate" class="stat-value text-secondary">None</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Checkpoints Saved</span>
+            <span id="lab6-stat-checkpoints" class="stat-value">0 Snapshots</span>
+          </div>
+        </div>
+
+        <!-- Approval Gate Action Modal / Banner -->
+        <div id="lab6-approval-gate-banner" class="alert-banner hidden" style="margin-bottom: 1.5rem; border-color: var(--warning-border); background: rgba(245, 158, 11, 0.1);">
+          <div class="alert-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+              <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <div>
+              <strong>Human-in-the-Loop Approval Required:</strong>
+              <span id="lab6-approval-prompt-text">Publishing final course workspace requires faculty signoff.</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btn-lab6-approve" class="btn btn-success btn-sm">Approve & Continue</button>
+            <button id="btn-lab6-reject" class="btn btn-danger btn-sm">Reject</button>
+          </div>
+        </div>
+
+        <!-- Steps Timeline & Checkpoints -->
+        <div class="grid-2col">
+          <div>
+            <h4 class="subcard-title">Step Execution Log</h4>
+            <div id="lab6-steps-timeline" class="lab2-steps-timeline">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+          <div>
+            <h4 class="subcard-title">Latest State Checkpoint</h4>
+            <pre id="lab6-checkpoint-pre" class="code-block json-viewer">No checkpoints captured yet.</pre>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 7 VIEW: AGENTIC SPECIALIST NODE GRAPH
+         ==================================================================== -->
+    <div id="lab7-view" class="hidden" role="region" aria-label="Lab 7 Agentic Node Graph">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 7 &bull; Deterministic 10-Node Specialist DAG</div>
+          <h1 class="hero-title">Agentic Node Graph Workflow</h1>
+          <p class="hero-subtitle">
+            10 specialist agents coordinate in a validated Directed Acyclic Graph with explicit state transitions, 
+            bounded error retries, self-healing validation, and faculty approval gates.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="lab7-task-input" class="form-label">Graph Workflow Request</label>
+          <input 
+            id="lab7-task-input" 
+            class="form-input" 
+            value="Synthesize comprehensive 14-week 26ECAC401 Agentic AI syllabus, programming assignments, and grading rubric."
+          />
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-info">
+            <span class="badge badge-neutral">Graph Status: <span id="lab7-status-tag">READY</span></span>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button id="btn-lab7-step-graph" class="btn btn-secondary">
+              <span>Step One Node</span>
+            </button>
+            <button id="btn-lab7-run-all" class="btn btn-primary">
+              <span>Execute Full Graph</span>
+              <span class="spinner hidden" id="spinner-lab7-run" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Faculty Approval Gate Bar (Graph Level) -->
+      <div id="lab7-gate-banner" class="alert-banner hidden" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.12);">
+        <div class="alert-content">
+          <span style="font-size: 1.2rem;">🔒</span>
+          <div>
+            <strong>Gate 9: Faculty Signoff Required</strong>
+            <p>Workload and rubrics validated. Grant approval to publish the completed course workspace.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btn-lab7-approve" class="btn btn-success">Faculty Approve & Publish</button>
+          <button id="btn-lab7-reject" class="btn btn-danger">Reject</button>
+        </div>
+      </div>
+
+      <!-- Graph Topology Visualizer -->
+      <section class="card">
+        <div class="card-header">
+          <div class="header-row">
+            <h3 class="section-title">Specialist Node Topology</h3>
+            <span id="lab7-retry-badge" class="badge badge-neutral">Retries: 0 / 3</span>
+          </div>
+          <p class="card-subtitle">Real-time status of all 10 nodes in the execution graph.</p>
+        </div>
+
+        <div id="lab7-graph-nodes-grid" class="graph-nodes-grid">
+          <!-- 10 Nodes dynamically rendered -->
+        </div>
+      </section>
+
+      <!-- Graph State Output Inspector -->
+      <section id="lab7-output-container" class="card hidden">
+        <div class="card-header">
+          <h3 class="section-title">Synthesized Graph Deliverable</h3>
+          <p class="card-subtitle">Verified syllabus, assignment breakdown, and published workspace.</p>
+        </div>
+        <div id="lab7-output-content" class="markdown-preview-box"></div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         LAB 8 VIEW: PARALLEL SWARM & DYNAMIC FAN-OUT
+         ==================================================================== -->
+    <div id="lab8-view" class="hidden" role="region" aria-label="Lab 8 Parallel Swarm">
+      <section class="card hero-card">
+        <div class="card-header">
+          <div class="badge badge-accent">Lab 8 &bull; Concurrent Async Swarm</div>
+          <h1 class="hero-title">Parallel Swarm & Dynamic Fan-Out</h1>
+          <p class="hero-subtitle">
+            Concurrent multi-agent execution across curriculum units. Async fan-out dispatches independent specialists simultaneously, 
+            then merges all contributions against the locked course specification with partial failure resilience.
+          </p>
+        </div>
+
+        <div class="grid-3col">
+          <div class="form-group" style="grid-column: span 2;">
+            <label for="lab8-course-goal-input" class="form-label">Locked Course Specification (display only)</label>
+            <input 
+              id="lab8-course-goal-input" 
+              class="form-input" 
+              value="Complete 26ECAC401 Agentic AI 14-Week Curriculum (Chapters 1-4)"
+              readonly
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resilience Simulation</label>
+            <div style="padding-top: 0.5rem;">
+              <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input id="lab8-fail-sim-checkbox" type="checkbox" />
+                <span>Simulate Worker 3 Fault</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-info">
+            <span class="badge badge-neutral">Target Units: Unit 1, Unit 2, Unit 3, Unit 4</span>
+          </div>
+          <button id="btn-lab8-launch-swarm" class="btn btn-primary btn-lg">
+            <span class="btn-text">Dispatch Parallel Swarm ⚡</span>
+            <span class="spinner hidden" id="spinner-lab8-run" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Swarm Benchmark & Performance Stats -->
+      <section id="lab8-stats-container" class="card hidden">
+        <div class="lab2-stats-banner">
+          <div class="stat-pill">
+            <span class="stat-label">Swarm Status</span>
+            <span id="lab8-stat-status" class="stat-value text-success">COMPLETED</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Active Workers</span>
+            <span id="lab8-stat-workers" class="stat-value">4 Concurrent</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Actual Parallel Time</span>
+            <span id="lab8-stat-parallel-time" class="stat-value text-success">3.2 ms</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Estimated Sequential Time</span>
+            <span id="lab8-stat-seq-time" class="stat-value">12.5 ms</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Speedup Factor</span>
+            <span id="lab8-stat-speedup" class="stat-value text-success">3.9x Faster</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Worker Dashboard Grid -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Concurrent Specialist Worker Fleet</h3>
+          <p class="card-subtitle">Real-time status of asynchronously dispatched unit workers.</p>
+        </div>
+        <div id="lab8-workers-grid" class="swarm-workers-grid">
+          <!-- 4 Worker Cards dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Fan-In Merged Curriculum Deliverable -->
+      <section id="lab8-merged-container" class="card hidden">
+        <div class="card-header">
+          <div class="header-row">
+            <div>
+              <div class="badge badge-success">Fan-In Harmonized Syllabus</div>
+              <h3 class="section-title">Unified 14-Week Curriculum Output</h3>
+            </div>
+            <span id="lab8-resilience-badge" class="badge badge-neutral">Zero Collision</span>
+          </div>
+          <p class="card-subtitle">Merged, structured curriculum across all completed specialist worker branches.</p>
+        </div>
+        <div id="lab8-merged-content" class="markdown-preview-box"></div>
+      </section>
+    </div>
+
+    <div id="lab9-view" class="hidden" role="region" aria-label="Lab 9 Deep Research Agent">
+      <section class="card hero-card">
+        <div class="badge badge-neutral">Course overview source</div>
+        <h1 class="hero-title">Lab 9: Deep Research Agent</h1>
+        <p class="hero-subtitle"><strong>Source scope:</strong> “AI topic briefing, evidence table.” This tool finds lexical evidence candidates with citations; it does not orchestrate research or synthesize a briefing. The detailed companion lab manual was not supplied.</p>
+        <p class="hero-subtitle">Retrieve candidate evidence passages for supplied claims. A lexical match is not a proof of entailment; review every citation.</p>
+        <label for="lab9-claims-input" class="form-label">Claims (one per line)</label>
+        <textarea id="lab9-claims-input" class="form-textarea" rows="5">Agentic systems use tools to act on their environment.
+Course notes discuss Plan-Act-Observe-Revise.</textarea>
+        <label for="lab9-chapter-select" class="form-label">Chapter filter</label>
+        <select id="lab9-chapter-select" class="form-select"><option value="">All available chapters</option><option value="1">Chapter 1</option><option value="2">Chapter 2</option><option value="3">Chapter 3</option><option value="4">Chapter 4</option></select>
+        <button id="btn-lab9-verify" class="btn btn-primary">Find candidate evidence</button>
+        <pre id="lab9-result" class="markdown-preview-box" aria-live="polite">Enter claims to inspect source candidates.</pre>
+      </section>
+    </div>
+
+    <div id="lab10-view" class="hidden" role="region" aria-label="Lab 10 Cloud Operations Agent">
+      <section class="card hero-card">
+        <div class="badge badge-neutral">Local cloud-operations simulation</div>
+        <h1 class="hero-title">Lab 10: Cloud Operations Agent</h1>
+        <p class="hero-subtitle"><strong>Source scope:</strong> “Failed deployment: diagnose &amp; fix.” Diagnose a seeded failed deployment, then review and apply a bounded repair or roll it back. This workflow changes only the simulator’s in-memory state; it does not contact a cloud provider or deploy to production.</p>
+        <div class="button-row">
+          <button id="btn-lab10-diagnose" class="btn btn-secondary">Diagnose simulated failed deployment</button>
+          <button id="btn-lab10-repair" class="btn btn-primary">Apply bounded repair (simulation only)</button>
+          <button id="btn-lab10-rollback" class="btn btn-secondary" disabled>Rollback simulated repair</button>
+        </div>
+        <label class="form-label" for="lab10-repair-approval">
+          <input id="lab10-repair-approval" type="checkbox" />
+          I approve this repair to the disposable local simulation.
+        </label>
+        <pre id="lab10-cloud-result" class="markdown-preview-box" aria-live="polite">No simulated deployment diagnosis has run.</pre>
+        <details class="card"><summary>Grade-weight validation utility</summary>
+        <label for="lab10-weights-input" class="form-label">Weights as JSON</label>
+        <textarea id="lab10-weights-input" class="form-textarea font-mono" rows="5">[{"name":"Assignments","weight":40},{"name":"Labs","weight":30},{"name":"Final project","weight":20}]</textarea>
+        <button id="btn-lab10-validate" class="btn btn-primary">Validate and propose repair</button>
+        <div class="form-group">
+          <label for="lab10-repair-index" class="form-label">Draft item index to repair (zero-based)</label>
+          <input id="lab10-repair-index" class="form-input" type="number" min="0" value="2" />
+          <label for="lab10-inject-repair-failure" class="form-label">
+            <input id="lab10-inject-repair-failure" type="checkbox" />
+            Inject a repair failure to verify bounded escalation
+          </label>
+          <button id="btn-lab10-simulate-repair" class="btn btn-secondary">Run bounded repair preview (no save)</button>
+        </div>
+        <pre id="lab10-result" class="markdown-preview-box" aria-live="polite">No changes are applied by this validation.</pre>
+        </details>
+      </section>
+    </div>
+
+    <div id="lab11-view" class="hidden" role="region" aria-label="Lab 11 Test Factory">
+      <section class="card hero-card">
+        <div class="badge badge-neutral">Course overview source</div>
+        <h1 class="hero-title">Lab 11: Agentic SDLC Factory</h1>
+        <p class="hero-subtitle"><strong>Source scope:</strong> “Requirement → tested implementation.” This page runs fixed application smoke checks; it does not generate code from requirements. The detailed companion lab manual was not supplied.</p>
+        <button id="btn-lab11-run" class="btn btn-secondary">Run application smoke checks</button>
+        <pre id="lab11-result" class="markdown-preview-box" aria-live="polite">Benchmark has not run.</pre>
+        <details class="card">
+          <summary>Build a bounded, evidence-backed artifact from a requirement</summary>
+          <p class="form-help">This creates a structured course-work artifact and runs fixed structural checks. It does not generate or execute arbitrary source code.</p>
+          <div class="grid-2col">
+            <label class="form-label" for="lab11-spec-type">Specialist profile
+              <select id="lab11-spec-type" class="form-select"><option value="theory">Theory</option><option value="lab">Lab</option><option value="project">Project</option></select>
+            </label>
+            <label class="form-label" for="lab11-spec-chapter">Chapter (optional)
+              <input id="lab11-spec-chapter" class="form-input" type="number" min="1" max="14" placeholder="1-14" />
+            </label>
+          </div>
+          <label class="form-label" for="lab11-spec-requirement">Requirement</label>
+          <textarea id="lab11-spec-requirement" class="form-textarea" rows="3" maxlength="1000" placeholder="Describe the requested course work item"></textarea>
+          <button id="btn-lab11-spec-build" class="btn btn-primary">Build and test structured artifact</button>
+          <pre id="lab11-spec-result" class="markdown-preview-box" aria-live="polite">No requirement artifact has been built.</pre>
+        </details>
+      </section>
+    </div>
+
+    <div id="lab12-view" class="hidden" role="region" aria-label="Lab 12 Governance and Rollback">
+      <section class="card hero-card">
+        <div class="badge badge-neutral">SQLite-backed governance demo</div>
+        <h1 class="hero-title">Lab 12: Governance, Approval &amp; Rollback</h1>
+        <p class="hero-subtitle"><strong>Source scope:</strong> “Risk, approval, eval, rollback plan.” Proposals, decisions, governed values, and audit events persist in SQLite. This demo supports approval/rejection and rollback; risk assessment and evaluation planning are not included. The detailed companion lab manual was not supplied. Demo role headers are not authentication.</p>
+        <div class="grid-2col">
+          <div class="form-group"><label for="lab12-resource-input" class="form-label">Resource identifier</label><input id="lab12-resource-input" class="form-input" value="demo-course-config" /></div>
+          <div class="form-group"><label for="lab12-summary-input" class="form-label">Change summary</label><input id="lab12-summary-input" class="form-input" value="Update demo course setting" /></div>
+        </div>
+        <label for="lab12-current-input" class="form-label">Current value (JSON)</label>
+        <textarea id="lab12-current-input" class="form-textarea font-mono" rows="2">{"mode":"draft"}</textarea>
+        <label for="lab12-proposed-input" class="form-label">Proposed value (JSON)</label>
+        <textarea id="lab12-proposed-input" class="form-textarea font-mono" rows="2">{"mode":"reviewed"}</textarea>
+        <button id="btn-lab12-propose" class="btn btn-primary">Stage change proposal</button>
+        <div class="grid-2col" style="margin-top:1rem;">
+          <div class="form-group"><label for="lab12-proposal-id" class="form-label">Proposal ID</label><input id="lab12-proposal-id" class="form-input font-mono" placeholder="Created after proposal" /></div>
+          <div class="form-group"><label for="lab12-decision-comment" class="form-label">Decision comment</label><input id="lab12-decision-comment" class="form-input" value="Reviewed for demonstration" /></div>
+        </div>
+        <div class="button-row"><button id="btn-lab12-approve" class="btn btn-secondary">Approve</button><button id="btn-lab12-reject" class="btn btn-secondary">Reject</button><button id="btn-lab12-rollback" class="btn btn-secondary">Rollback approved change</button></div>
+        <pre id="lab12-result" class="markdown-preview-box" aria-live="polite">No governance proposal yet.</pre>
+      </section>
+    </div>
+
+    <div id="lab13-view" class="hidden" role="region" aria-label="Lab 13 Course Specialists">
+      <section class="card hero-card">
+        <div class="badge badge-neutral">Evidence-cited deterministic specialists</div>
+        <h1 class="hero-title">Lab 13: Course-Type Specialists</h1>
+        <p class="hero-subtitle">Select a theory, lab, or project profile. Outputs are constrained scaffolds with local source citations and observable checks; faculty remains responsible for course objectives, procedures, and rubrics.</p>
+        <div class="grid-2col">
+          <label class="form-label" for="lab13-specialist-type">Specialist
+            <select id="lab13-specialist-type" class="form-select"><option value="theory">Theory course</option><option value="lab">Practical lab</option><option value="project">Course project</option></select>
+          </label>
+          <label class="form-label" for="lab13-chapter">Chapter (optional)
+            <input id="lab13-chapter" class="form-input" type="number" min="1" max="14" placeholder="1-14" />
+          </label>
+        </div>
+        <label class="form-label" for="lab13-work-item">Course work item</label>
+        <textarea id="lab13-work-item" class="form-textarea" rows="3" maxlength="1000" placeholder="Describe the topic, practical task, or project deliverable"></textarea>
+        <button id="btn-lab13-run" class="btn btn-primary">Run specialist with citations</button>
+        <pre id="lab13-result" class="markdown-preview-box" aria-live="polite">No specialist output yet.</pre>
+      </section>
+    </div>
+
+    <div id="lab14-view" class="hidden" role="region" aria-label="Lab 14 Integrated Course Capstone">
+      <section class="card hero-card">
+        <div class="badge badge-accent">Persistent, course-scoped coordinator</div>
+        <h1 class="hero-title">Lab 14: Course Workspace Capstone</h1>
+        <p class="hero-subtitle">Builds a durable snapshot from actual authorized course materials, evidence, assignments/rubrics, submissions, similarity results, and project milestones. Validation failures cannot be approved. Only scoped course faculty can publish; students can view the current published release.</p>
+        <div class="grid-2col">
+          <label class="form-label" for="capstone-assignment-id">Assignment ID
+            <input id="capstone-assignment-id" class="form-input" value="lab1" maxlength="80" />
+          </label>
+          <label class="form-label" for="capstone-course-id">Course ID
+            <input id="capstone-course-id" class="form-input" value="26ECAC401" maxlength="80" />
+          </label>
+        </div>
+        <label class="form-label" for="capstone-request">Workspace request</label>
+        <textarea id="capstone-request" class="form-textarea" rows="3" maxlength="1000">Organize the course materials, assignment review, and project checkpoints with cited evidence.</textarea>
+        <div class="button-row">
+          <button id="btn-capstone-run" class="btn btn-primary">Prepare and validate workspace</button>
+          <button id="btn-capstone-approve" class="btn btn-secondary">Faculty approve and publish</button>
+          <button id="btn-capstone-reject" class="btn btn-secondary">Faculty reject</button>
+          <button id="btn-capstone-current" class="btn btn-secondary">View current release</button>
+          <button id="btn-capstone-rollback" class="btn btn-secondary">Rollback current release</button>
+        </div>
+        <pre id="capstone-result" class="markdown-preview-box" aria-live="polite">No capstone run has been prepared.</pre>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         SUBMISSIONS VIEW: GITHUB ASSIGNMENT SUBMISSION & REVIEW PORTAL
+         ==================================================================== -->
+    <div id="submissions-view" class="hidden" role="region" aria-label="GitHub Assignment Submissions & Faculty Review">
+      <!-- Portal Sub-Navigation Segmented Switcher -->
+      <section class="card hero-card" style="margin-bottom: 1.5rem;">
+        <div class="header-row" style="flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="badge badge-accent">Course 26ECAC401 &bull; Academic Submissions Hub</div>
+            <h1 class="hero-title" style="font-size: 1.7rem; margin-top: 0.3rem;">Student GitHub Submissions & Faculty Review</h1>
+            <p class="hero-subtitle" style="margin-bottom: 0;">
+              Submit and verify GitHub repository solutions for Agentic AI course programming assignments.
+              Enforces strict URL validation, deadline verification, attempt versioning, and auditable faculty grading.
+            </p>
+          </div>
+          <!-- Portal Role Switcher -->
+          <div id="portal-role-switcher" class="portal-role-switcher" role="tablist" aria-label="Portal Role" style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.06); padding: 4px; border-radius: var(--radius-pill);">
+            <button id="btn-portal-student" class="btn btn-sm btn-primary" role="tab" aria-selected="true" style="border-radius: var(--radius-pill);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Student Portal
+            </button>
+            <button id="btn-portal-faculty" class="btn btn-sm btn-secondary" role="tab" aria-selected="false" style="border-radius: var(--radius-pill);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+              Faculty Review Portal
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION A: STUDENT PORTAL -->
+      <div id="student-portal-section">
+        <div class="grid-2col">
+          <!-- Left Column: Student Identity & Submission Form -->
+          <div class="card">
+            <div class="card-header">
+              <div class="badge badge-neutral">Student Identity & Submission</div>
+              <h3 class="section-title">Submit Solution Repository</h3>
+              <p class="card-subtitle">Your student identity is derived from your authenticated account. Choose an assignment and enter your HTTPS GitHub repository URL. Private repositories cannot be inspected without GitHub access. Submitted code is never executed.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="sub-student-select" class="form-label">Active Student Identity</label>
+              <select id="sub-student-select" class="form-select">
+                <!-- Dynamically populated from /api/students -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="sub-assignment-select" class="form-label">Select Course Assignment</label>
+              <select id="sub-assignment-select" class="form-select">
+                <!-- Dynamically populated from /api/assignments -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="sub-github-url-input" class="form-label">
+                GitHub Repository HTTPS URL
+                <span class="label-hint">Format: https://github.com/username/repository</span>
+              </label>
+              <input
+                id="sub-github-url-input"
+                type="url"
+                class="form-input font-mono"
+                placeholder="https://github.com/alicechen/agentic-ai-solution"
+                autocomplete="off"
+              />
+              <div id="sub-url-feedback" class="url-feedback-text" style="font-size: 0.82rem; margin-top: 0.4rem; min-height: 1.2rem;"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="sub-notes-input" class="form-label">Implementation Notes (Optional)</label>
+              <textarea
+                id="sub-notes-input"
+                class="form-textarea"
+                rows="2"
+                placeholder="Key architecture choices, test coverage notes, or instructions for the faculty evaluator..."
+              ></textarea>
+            </div>
+
+            <div class="card-footer" style="padding: 0; border-top: none;">
+              <button id="btn-submit-github" class="btn btn-primary" style="width: 100%;">
+                <span class="btn-text">Submit Assignment via GitHub</span>
+                <span class="spinner hidden" id="spinner-submit-github" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <!-- Submission Confirmation Receipt Card -->
+            <div id="sub-receipt-card" class="submission-receipt card hidden" style="margin-top: 1.5rem; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(52, 199, 89, 0.35);">
+              <div class="header-row">
+                <span class="badge badge-success" id="receipt-status-badge">SUBMITTED</span>
+                <span class="text-secondary font-mono" id="receipt-attempt-pill" style="font-size: 0.85rem;">Attempt #1</span>
+              </div>
+              <h4 style="margin: 0.6rem 0 0.2rem 0; font-size: 1.1rem; color: #fff;" id="receipt-title">Submission Confirmed</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.8rem;" id="receipt-timestamp">Timestamp: --</p>
+              
+              <div style="font-size: 0.88rem; margin-bottom: 0.5rem;">
+                <strong>Repository:</strong> <a id="receipt-repo-link" href="#" target="_blank" rel="noopener noreferrer" class="link-external" style="color: var(--accent); text-decoration: underline;">--</a>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);" id="receipt-details">
+                <!-- Validation Details -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Assignment Details & Rubric -->
+          <div class="card">
+            <div class="card-header">
+              <div class="badge badge-warning">Seeded Demo Assignment Data — Not Faculty-Verified</div>
+              <h3 class="section-title" id="asgn-detail-title">Assignment Details</h3>
+              <p class="card-subtitle" id="asgn-detail-desc">Select an assignment to view official rules, deadline, and policy.</p>
+            </div>
+
+            <div class="lab2-stats-banner" style="margin-bottom: 1.2rem;">
+              <div class="stat-pill">
+                <span class="stat-label">Max Score</span>
+                <span id="asgn-stat-points" class="stat-value">100 pts</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Course Weight</span>
+                <span id="asgn-stat-weight" class="stat-value">10.0%</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Pacing Week</span>
+                <span id="asgn-stat-week" class="stat-value">Week 3</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Eligibility</span>
+                <span id="asgn-stat-status" class="stat-value text-success">OPEN</span>
+              </div>
+            </div>
+
+            <div class="rule-box" style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+              <h4 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.3rem;">Configured Demo Deadline</h4>
+              <p id="asgn-due-date" class="font-mono" style="font-size: 0.85rem; color: var(--text-secondary);">Oct 31, 2026 23:59:59 UTC</p>
+            </div>
+
+            <div class="rule-box" style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+              <h4 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.3rem;">Late-Submission Policy</h4>
+              <p id="asgn-late-policy" style="font-size: 0.85rem; color: var(--text-secondary);">5% deduction per day up to 3 days late.</p>
+            </div>
+
+            <div class="rule-box" style="padding: 0.8rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+              <h4 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.3rem;">Submission Guidelines</h4>
+              <p id="asgn-submission-rules" style="font-size: 0.85rem; color: var(--text-secondary);">HTTPS GitHub repository link containing full solution code and README.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Submission History Table -->
+        <section class="card" style="margin-top: 1.5rem;">
+          <div class="card-header">
+            <div class="header-row">
+              <div>
+                <h3 class="section-title">My Submission History</h3>
+                <p class="card-subtitle">All attempts and official evaluation results for the active student.</p>
+              </div>
+              <button id="btn-refresh-student-history" class="btn btn-secondary btn-sm">Refresh History</button>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="overflow-x: auto;">
+            <table class="data-table" id="student-history-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-card); text-align: left; font-size: 0.85rem; color: var(--text-secondary);">
+                  <th style="padding: 0.6rem;">Attempt</th>
+                  <th style="padding: 0.6rem;">Assignment</th>
+                  <th style="padding: 0.6rem;">Submitted At</th>
+                  <th style="padding: 0.6rem;">Repository Link</th>
+                  <th style="padding: 0.6rem;">Status</th>
+                  <th style="padding: 0.6rem;">Score</th>
+                  <th style="padding: 0.6rem;">Faculty Feedback</th>
+                </tr>
+              </thead>
+              <tbody id="student-history-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section id="admin-portal-section" class="card hidden" aria-label="Administrator submissions overview">
+        <div class="card-header">
+          <div class="badge badge-accent">Administrator Overview</div>
+          <h2 class="section-title">Course Submission Oversight</h2>
+          <p class="card-subtitle">Select <strong>Open assignment</strong> to view the saved assignment details. This Admin account is read-only and cannot submit work; submissions require signing in with a Student account linked to a course enrollment. Faculty grading and approval remain Faculty-only.</p>
+        </div>
+        <div class="admin-overview-stats">
+          <div class="admin-overview-stat"><span class="admin-overview-label">Configured assignments</span><strong id="admin-assignment-count" class="admin-overview-value">0</strong></div>
+          <div class="admin-overview-stat"><span class="admin-overview-label">Course</span><strong id="admin-course-label" class="admin-overview-value">-</strong></div>
+        </div>
+        <div id="admin-assignment-list" class="stack-list" aria-live="polite"></div>
+        <section id="admin-assignment-details" class="admin-assignment-details hidden" aria-live="polite" aria-label="Selected assignment details">
+          <div class="admin-assignment-details-heading">
+            <div>
+              <span class="admin-overview-label">Selected assignment</span>
+              <h3 id="admin-assignment-detail-title" class="section-title"></h3>
+            </div>
+            <button id="btn-admin-close-assignment-details" class="btn btn-ghost btn-sm" type="button">Close</button>
+          </div>
+          <div class="admin-assignment-detail-grid">
+            <div><span class="admin-overview-label">Status</span><strong id="admin-assignment-detail-status"></strong></div>
+            <div><span class="admin-overview-label">Points</span><strong id="admin-assignment-detail-points"></strong></div>
+            <div><span class="admin-overview-label">Due date</span><strong id="admin-assignment-detail-due"></strong></div>
+          </div>
+          <p id="admin-assignment-detail-description" class="card-subtitle"></p>
+          <p id="admin-assignment-detail-rules" class="card-subtitle"></p>
+          <p class="admin-student-signin-note">To submit this assignment, sign out and sign in with a Student account for this course. Administrator access cannot submit for a student.</p>
+        </section>
+      </section>
+
+      <!-- SECTION B: FACULTY REVIEW PORTAL -->
+      <div id="faculty-portal-section" class="hidden">
+        <section class="card">
+          <div class="card-header">
+            <div class="header-row" style="flex-wrap: wrap; gap: 0.8rem;">
+              <div>
+                <div class="badge badge-accent">Faculty Oversight & Grading</div>
+                <h3 class="section-title">Enrolled Student Submissions</h3>
+                <p class="card-subtitle">Inspect submitted solutions, verify GitHub links, and award verified evaluation grades.</p>
+              </div>
+              <div class="filter-controls" style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                <select id="faculty-asgn-filter" class="form-select" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.85rem;">
+                  <option value="">All Assignments</option>
+                </select>
+                <select id="faculty-status-filter" class="form-select" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.85rem;">
+                  <option value="ALL">All Statuses</option>
+                  <option value="SUBMITTED">Submitted</option>
+                  <option value="LATE">Late</option>
+                  <option value="UNDER_REVIEW">Under Review</option>
+                  <option value="DRAFT_GRADED">Draft Graded</option>
+                  <option value="RETURNED_FOR_REVISION">Returned for Revision</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="PUBLISHED">Published</option>
+                </select>
+                <button id="btn-refresh-faculty-subs" class="btn btn-secondary btn-sm">Refresh</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="overflow-x: auto;">
+            <table class="data-table" id="faculty-submissions-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-card); text-align: left; font-size: 0.85rem; color: var(--text-secondary);">
+                  <th style="padding: 0.6rem;">Submission ID</th>
+                  <th style="padding: 0.6rem;">Student</th>
+                  <th style="padding: 0.6rem;">Assignment</th>
+                  <th style="padding: 0.6rem;">Attempt</th>
+                  <th style="padding: 0.6rem;">Submitted At</th>
+                  <th style="padding: 0.6rem;">Status</th>
+                  <th style="padding: 0.6rem;">Repository Link</th>
+                  <th style="padding: 0.6rem;">Score</th>
+                  <th style="padding: 0.6rem;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="faculty-submissions-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Faculty Review Modal Dialog -->
+  <div id="faculty-review-modal" class="drawer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+    <div class="modal-panel" style="max-width: 540px;">
+      <div class="drawer-header">
+        <div class="drawer-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <h3 id="review-modal-title" class="drawer-title">Evaluate Student Submission</h3>
+        </div>
+        <button id="btn-close-review-modal" class="btn-close" aria-label="Close Review Modal">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <div class="submission-summary-box" style="margin-bottom: 1.2rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+          <div style="font-size: 0.9rem; margin-bottom: 0.3rem;"><strong>Student:</strong> <span id="modal-review-student">--</span></div>
+          <div style="font-size: 0.9rem; margin-bottom: 0.3rem;"><strong>Assignment:</strong> <span id="modal-review-assignment">--</span></div>
+          <div style="font-size: 0.9rem; margin-bottom: 0.3rem;"><strong>Repository:</strong> <a id="modal-review-repo" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: underline;">--</a></div>
+          <div style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Submitted:</strong> <span id="modal-review-timestamp">--</span></div>
+        </div>
+
+        <input type="hidden" id="modal-review-sub-id" />
+
+        <div class="form-group">
+          <label for="modal-review-status" class="form-label">Review State</label>
+          <select id="modal-review-status" class="form-select">
+            <option value="UNDER_REVIEW">Under review</option>
+            <option value="DRAFT_GRADED">Draft grade saved</option>
+            <option value="RETURNED_FOR_REVISION">Returned for revision</option>
+          </select>
+          <p id="modal-review-state-note" class="card-subtitle" style="margin-top: 0.4rem;">Drafts are private to faculty until approved and published.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="modal-review-score" class="form-label">Draft Score (0 - 100)</label>
+          <input id="modal-review-score" type="number" min="0" max="100" step="0.5" class="form-input font-mono" />
+        </div>
+
+        <div class="form-group">
+          <label for="modal-review-feedback" class="form-label">Faculty Qualitative Feedback</label>
+          <textarea id="modal-review-feedback" class="form-textarea" rows="4" placeholder="Detailed feedback on code quality, test coverage, and architecture..."></textarea>
+        </div>
+
+        <div class="card-footer" style="padding: 0; border-top: none;">
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; width: 100%;">
+          <button id="btn-save-faculty-review" class="btn btn-secondary" style="flex: 1 1 100%;">
+            <span class="btn-text">Save Review Draft</span>
+            <span class="spinner hidden" id="spinner-save-review" aria-hidden="true"></span>
+          </button>
+          <button id="btn-approve-faculty-grade" class="btn btn-primary" style="flex: 1;">Approve Grade</button>
+          <button id="btn-publish-faculty-grade" class="btn btn-primary" style="flex: 1;">Publish Grade</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools Catalog Modal (Lab 2) -->
+  <div id="lab2-tools-modal" class="drawer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="lab2-tools-title">
+    <div class="modal-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+          <h3 id="lab2-tools-title" class="drawer-title">Registered Typed Tools Catalog</h3>
+        </div>
+        <button id="btn-close-tools-modal" class="btn-close" aria-label="Close Tools Catalog Modal">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-desc">9 strictly typed Pydantic tools registered in the Tool Registry with declarative JSON schemas.</p>
+        <div id="lab2-tools-list-container" class="tools-catalog-list" role="region" aria-label="Registered Tools List">
+          <!-- Dynamically populated from /api/lab2/tools -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direct Tool Sandbox Modal (Lab 2) -->
+  <div id="lab2-sandbox-modal" class="drawer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="lab2-sandbox-title">
+    <div class="modal-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <h3 id="lab2-sandbox-title" class="drawer-title">Direct Tool Sandbox & Validator</h3>
+        </div>
+        <button id="btn-close-sandbox-modal" class="btn-close" aria-label="Close Tool Sandbox Modal">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-desc">Directly invoke individual tools with custom parameters to test schema validation and execution timing.</p>
+        <div class="form-group">
+          <label for="sandbox-tool-select" class="form-label">Select Registered Tool</label>
+          <select id="sandbox-tool-select" class="form-select">
+            <!-- Dynamically populated with registered tool names -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sandbox-params-input" class="form-label">Input Parameters (JSON)</label>
+          <textarea id="sandbox-params-input" class="form-textarea font-mono" rows="4">{"course_id": "26ECAC401"}</textarea>
+        </div>
+        <div class="card-footer" style="padding: 0; margin-bottom: 1.5rem; border-top: none;">
+          <button id="btn-run-sandbox" class="btn btn-primary">
+            <span class="btn-text">Execute Tool Directly</span>
+            <span class="spinner hidden" id="spinner-sandbox" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="form-group">
+          <label for="sandbox-result-pre" class="form-label">ToolCallRecord Result</label>
+          <pre id="sandbox-result-pre" class="code-block json-viewer" role="region" aria-live="polite">Click "Execute Tool Directly" to view validated execution output.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution Audit Drawer (Modal/Slide-out) -->
+  <div id="audit-drawer" class="drawer-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="audit-drawer-title">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <h3 id="audit-drawer-title" class="drawer-title">System Coordinator Audit Trail</h3>
+        </div>
+        <button id="btn-close-drawer" class="btn-close" aria-label="Close Audit Drawer">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-desc">Real backend coordinator execution logs tracking duration, trace IDs, and action status.</p>
+        <div id="audit-timeline" class="audit-timeline" role="region" aria-live="polite" aria-label="System Coordinator Audit Logs">
+          <!-- Dynamically populated from /api/system/audit -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=1.1.4"></script>
+</body>
+</html>
