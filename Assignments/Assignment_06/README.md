@@ -27,8 +27,8 @@ This assignment enforces verifiable agentic AI design principles:
 
 ## 3. Implementation Components
 The core logic for this assignment is implemented in the following modules:
-- [runtime.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab6/runtime.py)
-- [checkpoint.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab6/checkpoint.py)
+- [engine.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab6/engine.py)
+- [agent.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab6/agent.py)
 - [lab6_models.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/models/lab6_models.py)
 - [routes_lab6.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/api/routes_lab6.py)
 

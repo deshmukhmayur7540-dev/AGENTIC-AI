@@ -27,7 +27,7 @@ This assignment enforces verifiable agentic AI design principles:
 
 ## 3. Implementation Components
 The core logic for this assignment is implemented in the following modules:
-- [connector.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab5/connector.py)
+- [governed_connector.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab5/governed_connector.py)
 - [sqlite_source.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab5/sources/sqlite_source.py)
 - [notes_source.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab5/sources/notes_source.py)
 - [routes_lab5.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/api/routes_lab5.py)

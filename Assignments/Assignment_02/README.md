@@ -29,7 +29,7 @@ This assignment enforces verifiable agentic AI design principles:
 ## 3. Implementation Components
 The core logic for this assignment is implemented in the following modules:
 - [agent.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab2/agent.py)
-- [tools.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab2/tools.py)
+- [registry.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab2/tools/registry.py)
 - [planner.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab2/planner.py)
 - [lab2_models.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/models/lab2_models.py)
 - [routes_lab2.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/api/routes_lab2.py)

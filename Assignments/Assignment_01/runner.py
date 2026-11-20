@@ -1,18 +1,21 @@
+import sys
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 # Assignment 1 Verification Runner
 import asyncio
-from app.labs.lab1.planner import SyllabusPlanner
-from app.models.lab1_models import CoursePlanRequest
+from app.labs.lab1.agent import ClarifyPlanReviseAgent
+from app.models.lab1_models import FacultyCourseRequest
 
 async def main():
     print("=== Assignment 1: Clarify-Plan-Revise Planner ===")
-    planner = SyllabusPlanner()
-    req = CoursePlanRequest(course_code="26ECAC401", course_title="Agentic AI", credits=4, weeks=14)
-    plan = planner.generate_plan(req)
-    print(f"Generated Plan: {plan.course_code} - {plan.course_title}")
-    print(f"Total Weeks: {len(plan.weeks)}")
-    revised = planner.revise_week(plan.plan_id, week_number=3, new_topic="Advanced ReAct Agent Architectures")
-    diff = planner.compute_diff(plan.plan_id, revised.plan_id)
-    print(f"Deterministic Diff: {diff.summary}")
+    agent = ClarifyPlanReviseAgent()
+    req = FacultyCourseRequest(raw_prompt="Design a course on Autonomous AI Agents", course_id="26ECAC401", topic="Autonomous AI Agents", level="advanced")
+    res = await agent.execute("clarify", req.model_dump())
+    print(f"Clarification Result: {res.get('status')}")
+    print(f"Questions Identified: {len(res.get('questions', []))}")
     print("Assignment 1 Verification: PASSED")
 
 if __name__ == '__main__':

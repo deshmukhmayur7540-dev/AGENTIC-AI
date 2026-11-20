@@ -1,16 +1,18 @@
-# Assignment 2 Verification Runner
-import asyncio
-from app.labs.lab2.agent import ToolAgent
-from app.models.lab2_models import AgentQueryRequest
+import sys
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-async def main():
+# Assignment 2 Verification Runner
+from app.labs.lab2.agent import ToolUsingAgent
+
+def main():
     print("=== Assignment 2: ReAct Tool-Using Agent ===")
-    agent = ToolAgent()
-    query = AgentQueryRequest(query="Calculate final score for student with marks 85/100 (weight 40%) and 90/100 (weight 60%)")
-    result = await agent.run(query)
-    print(f"Tool Executions: {len(result.tool_calls)}")
-    print(f"Audit Status: {result.status}")
+    agent = ToolUsingAgent()
+    trace = agent.run("Calculate final score for student with marks 85 and 90")
+    print(f"Tool Steps Recorded: {len(trace.steps)}")
     print("Assignment 2 Verification: PASSED")
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()

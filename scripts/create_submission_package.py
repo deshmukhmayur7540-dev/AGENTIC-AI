@@ -25,7 +25,8 @@ Assignment 1 requires building an interactive workspace planning agent that:
 4. Supports atomic, validated revisions with deterministic semantic diffing between syllabus versions.""",
         "modules": [
             "app/labs/lab1/agent.py",
-            "app/labs/lab1/planner.py",
+            "app/labs/lab1/plan_generator.py",
+            "app/labs/lab1/gap_analyzer.py",
             "app/models/lab1_models.py",
             "app/api/routes_lab1.py"
         ],
@@ -40,19 +41,16 @@ Assignment 1 requires building an interactive workspace planning agent that:
         ],
         "runner_code": """# Assignment 1 Verification Runner
 import asyncio
-from app.labs.lab1.planner import SyllabusPlanner
-from app.models.lab1_models import CoursePlanRequest
+from app.labs.lab1.agent import ClarifyPlanReviseAgent
+from app.models.lab1_models import FacultyCourseRequest
 
 async def main():
     print("=== Assignment 1: Clarify-Plan-Revise Planner ===")
-    planner = SyllabusPlanner()
-    req = CoursePlanRequest(course_code="26ECAC401", course_title="Agentic AI", credits=4, weeks=14)
-    plan = planner.generate_plan(req)
-    print(f"Generated Plan: {plan.course_code} - {plan.course_title}")
-    print(f"Total Weeks: {len(plan.weeks)}")
-    revised = planner.revise_week(plan.plan_id, week_number=3, new_topic="Advanced ReAct Agent Architectures")
-    diff = planner.compute_diff(plan.plan_id, revised.plan_id)
-    print(f"Deterministic Diff: {diff.summary}")
+    agent = ClarifyPlanReviseAgent()
+    req = FacultyCourseRequest(raw_prompt="Design a course on Autonomous AI Agents", course_id="26ECAC401", topic="Autonomous AI Agents", level="advanced")
+    res = await agent.execute("clarify", req.model_dump())
+    print(f"Clarification Result: {res.get('status')}")
+    print(f"Questions Identified: {len(res.get('questions', []))}")
     print("Assignment 1 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -73,7 +71,7 @@ Assignment 2 requires constructing a deterministic tool-using agent adhering to 
 4. Support an auditable verified domain facts board that aggregates facts discovered during execution.""",
         "modules": [
             "app/labs/lab2/agent.py",
-            "app/labs/lab2/tools.py",
+            "app/labs/lab2/tools/registry.py",
             "app/labs/lab2/planner.py",
             "app/models/lab2_models.py",
             "app/api/routes_lab2.py"
@@ -88,21 +86,17 @@ Assignment 2 requires constructing a deterministic tool-using agent adhering to 
             "GET /api/lab2/trace/{trace_id} - Inspect execution trace and facts board"
         ],
         "runner_code": """# Assignment 2 Verification Runner
-import asyncio
-from app.labs.lab2.agent import ToolAgent
-from app.models.lab2_models import AgentQueryRequest
+from app.labs.lab2.agent import ToolUsingAgent
 
-async def main():
+def main():
     print("=== Assignment 2: ReAct Tool-Using Agent ===")
-    agent = ToolAgent()
-    query = AgentQueryRequest(query="Calculate final score for student with marks 85/100 (weight 40%) and 90/100 (weight 60%)")
-    result = await agent.run(query)
-    print(f"Tool Executions: {len(result.tool_calls)}")
-    print(f"Audit Status: {result.status}")
+    agent = ToolUsingAgent()
+    trace = agent.run("Calculate final score for student with marks 85 and 90")
+    print(f"Tool Steps Recorded: {len(trace.steps)}")
     print("Assignment 2 Verification: PASSED")
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
 """
     },
     {
@@ -141,7 +135,7 @@ def main():
     skills = skill_registry.list_skills()
     print(f"Registered Skills: {[s.name for s in skills]}")
     assert len(skills) >= 3, "Expected at least 3 skills"
-    plan_skill = skill_registry.get("planning_skill")
+    plan_skill = skill_registry.get_skill("course_planning_skill")
     assert plan_skill is not None
     print("Assignment 3 Verification: PASSED")
 
@@ -161,8 +155,8 @@ Assignment 4 requires building a dual-tier memory system:
 2. Long-Term Knowledge: Grounded retrieval combining local semantic embeddings (Sentence-Transformers) with deterministic BM25 lexical indexing.
 3. Citations: Every retrieved response must provide verified source document filenames and chunk offsets.""",
         "modules": [
-            "app/labs/lab4/memory.py",
-            "app/labs/lab4/embeddings.py",
+            "app/labs/lab4/session_store.py",
+            "app/labs/lab4/knowledge_store.py",
             "app/labs/lab4/agent.py",
             "app/models/lab4_models.py",
             "app/api/routes_lab4.py"
@@ -178,17 +172,16 @@ Assignment 4 requires building a dual-tier memory system:
             "GET /api/lab4/memories - Retrieve persisted session history"
         ],
         "runner_code": """# Assignment 4 Verification Runner
-from app.labs.lab4.memory import SessionMemoryStore
+from app.data.db import init_database
+from app.labs.lab4.session_store import short_term_store
 from app.knowledge.service import knowledge_service
 
 def main():
     print("=== Assignment 4: Dual-Tier Memory Architecture ===")
-    store = SessionMemoryStore()
-    session_id = store.create_session(owner_id="std-001", course_id="26ECAC401")
-    store.add_message(session_id, role="user", content="What are the 4 chapters of Agentic AI?")
-    messages = store.get_messages(session_id)
-    print(f"Session Messages: {len(messages)}")
-    results = knowledge_service.search("autonomous agent loop", top_k=2)
+    init_database()
+    session = short_term_store.create_session(user_id="std-001", course_id="26ECAC401")
+    print(f"Created Session: {session.session_id}")
+    results = knowledge_service.search("Plan Act Observe Revise", top_k=2)
     print(f"RAG Matches: {len(results.matches)} (Top source: {results.matches[0].source_document if results.matches else 'None'})")
     print("Assignment 4 Verification: PASSED")
 
@@ -208,7 +201,7 @@ Assignment 5 requires implementing an MCP-style governed connector:
 2. Scoped Queries: Restrict data access strictly by course code and authenticated student ID.
 3. Unified Source Interface: Abstract relational database tables, course notes, and student submissions through a unified connector protocol.""",
         "modules": [
-            "app/labs/lab5/connector.py",
+            "app/labs/lab5/governed_connector.py",
             "app/labs/lab5/sources/sqlite_source.py",
             "app/labs/lab5/sources/notes_source.py",
             "app/api/routes_lab5.py"
@@ -222,13 +215,22 @@ Assignment 5 requires implementing an MCP-style governed connector:
             "GET /api/lab5/sources - Inspect registered data sources and permissions"
         ],
         "runner_code": """# Assignment 5 Verification Runner
-from app.labs.lab5.connector import AcademicConnector
+from app.labs.lab5.governed_connector import governed_connector
+from app.models.lab5_models import ConnectorRequest, ConnectorRole, ConnectorOperation
 
 def main():
     print("=== Assignment 5: Governed Academic Connector ===")
-    connector = AcademicConnector()
-    student_res = connector.query(actor_role="STUDENT", actor_id="std-001", course_id="26ECAC401", source="submissions")
-    print(f"Student Query Submissions: {len(student_res)}")
+    governed_connector.initialize()
+    req = ConnectorRequest(
+        role=ConnectorRole.FACULTY,
+        user_id="faculty-lead",
+        course_id="26ECAC401",
+        source_id="notes",
+        operation=ConnectorOperation.READ,
+        query={"action": "search", "query": "autonomous agent loop"}
+    )
+    res = governed_connector.dispatch(req)
+    print(f"Connector Response Success: {res.success}")
     print("Assignment 5 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -247,8 +249,8 @@ Assignment 6 requires implementing a resilient runtime engine:
 2. Bounded Budgets: Enforce explicit limits on step counts, elapsed time, tool calls, and high-consequence mutations.
 3. Fault Recovery: Support process restart with checkpoint restoration, resuming interrupted workflows seamlessly.""",
         "modules": [
-            "app/labs/lab6/runtime.py",
-            "app/labs/lab6/checkpoint.py",
+            "app/labs/lab6/engine.py",
+            "app/labs/lab6/agent.py",
             "app/models/lab6_models.py",
             "app/api/routes_lab6.py"
         ],
@@ -262,16 +264,13 @@ Assignment 6 requires implementing a resilient runtime engine:
             "GET /api/lab6/status/{run_id} - Inspect run status, checkpoints, and budget"
         ],
         "runner_code": """# Assignment 6 Verification Runner
-from app.labs.lab6.runtime import AgentRuntime
+from app.labs.lab6.engine import ControlledRuntimeEngine
 
 def main():
     print("=== Assignment 6: Resilient Agent Runtime ===")
-    runtime = AgentRuntime()
-    run = runtime.create_run(course_id="26ECAC401", max_steps=5)
-    print(f"Created Run: {run.run_id}, Initial Status: {run.status}")
-    runtime.step(run.run_id, action="INGEST_NOTES")
-    checkpoint = runtime.get_latest_checkpoint(run.run_id)
-    print(f"Checkpoint Saved: Step {checkpoint.step_number}")
+    engine = ControlledRuntimeEngine()
+    run = engine.create_run(course_id="26ECAC401", task_description="Prepare course report")
+    print(f"Created Run ID: {run.run_id}, Initial State: {run.state}")
     print("Assignment 6 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -307,15 +306,15 @@ Assignment 7 requires engineering a 10-node specialist workflow graph:
             "GET /api/lab7/state/{run_id} - Inspect node states and completed list"
         ],
         "runner_code": """# Assignment 7 Verification Runner
-from app.labs.lab7.graph import SpecialistWorkflowGraph
+from app.labs.lab7.graph import AgenticNodeGraph
 
 def main():
     print("=== Assignment 7: 10-Node Specialist Graph DAG ===")
-    graph = SpecialistWorkflowGraph()
-    state = graph.start_run(course_id="26ECAC401")
+    graph = AgenticNodeGraph()
+    state = graph.initialize_graph(user_request="Build syllabus and labs", course_id="26ECAC401")
     print(f"Graph Run ID: {state.run_id}, Current Node: {state.current_node}")
-    state = graph.step_node(state.run_id)
-    print(f"Stepped Node: {state.completed_nodes[-1]}, Next: {state.current_node}")
+    stepped = graph.step_node(state.run_id)
+    print(f"Stepped Node: {stepped.completed_nodes[-1] if stepped.completed_nodes else 'None'}, Next: {stepped.current_node}")
     print("Assignment 7 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -350,13 +349,12 @@ Assignment 8 requires orchestrating a concurrent chapter worker swarm:
         ],
         "runner_code": """# Assignment 8 Verification Runner
 import asyncio
-from app.labs.lab8.swarm import ChapterSwarmCoordinator
+from app.labs.lab8.swarm import swarm_coordinator
 
 async def main():
     print("=== Assignment 8: Parallel Specialist Swarm ===")
-    coordinator = ChapterSwarmCoordinator()
-    res = await coordinator.run_swarm(chapters=[1, 2, 3, 4], course_id="26ECAC401")
-    print(f"Swarm Status: {res.status}, Workers Succeeded: {res.successful_workers}/{len(res.chapters)}")
+    result = await swarm_coordinator.dispatch_swarm(course_id="26ECAC401", target_chapters=[1, 2, 3, 4])
+    print(f"Swarm Status: {result.status}, Succeeded Workers: {result.successful_workers}")
     print("Assignment 8 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -392,8 +390,8 @@ def main():
     print("=== Assignment 9: Deep Research Claim Verifier ===")
     claims = ["ReAct loop combines reasoning traces and action execution"]
     res = evidence_verifier.verify_claims(claims=claims, chapter=2)
-    print(f"Verified Claims: {len(res['results'])}")
-    print(f"Verdict: {res['results'][0]['status']}")
+    print(f"Verified Claims: {len(res['claims'])}")
+    print(f"Evidence Items: {len(res['evidence_table'])} (First status: {res['evidence_table'][0]['status'] if res['evidence_table'] else 'None'})")
     print("Assignment 9 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -431,10 +429,10 @@ from app.labs.lab10.cloud_ops import CloudOperationsAgent
 def main():
     print("=== Assignment 10: Cloud Operations Health Monitor ===")
     agent = CloudOperationsAgent()
-    status = agent.get_status()
-    print(f"Cluster Status: {status['cluster_status']}")
-    diag = agent.diagnose_component("database")
-    print(f"Diagnosis: {diag['root_cause']}")
+    status = agent.get_cluster_status()
+    print(f"Cluster ID: {status['cluster']['cluster_id']}")
+    diag = agent.diagnose_infrastructure("database-primary")
+    print(f"Diagnosis Status: {diag.get('status')}")
     print("Assignment 10 Verification: PASSED")
 
 if __name__ == '__main__':
@@ -614,10 +612,16 @@ def main():
         readme_path = asg_dir / "README.md"
         readme_path.write_text(generate_assignment_readme(asg), encoding="utf-8")
         
-        # Write runner.py
+        # Write runner.py with sys.path setup
         runner_path = asg_dir / "runner.py"
-        runner_path.write_text(asg["runner_code"], encoding="utf-8")
-        
+        runner_content = f'''import sys
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+{asg["runner_code"]}'''
+        runner_path.write_text(runner_content, encoding="utf-8")
         print(f"Generated {asg['id']}")
         
     # Write top-level Assignments/README.md

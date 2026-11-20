@@ -29,7 +29,8 @@ This assignment enforces verifiable agentic AI design principles:
 ## 3. Implementation Components
 The core logic for this assignment is implemented in the following modules:
 - [agent.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab1/agent.py)
-- [planner.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab1/planner.py)
+- [plan_generator.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab1/plan_generator.py)
+- [gap_analyzer.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/labs/lab1/gap_analyzer.py)
 - [lab1_models.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/models/lab1_models.py)
 - [routes_lab1.py](file:///C:/Users/Lenovo/Desktop/CourseAgentAI/app/api/routes_lab1.py)
 
