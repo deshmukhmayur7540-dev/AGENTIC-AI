@@ -5,7 +5,7 @@ from pathlib import Path
 from dulwich import porcelain
 from dulwich.repo import Repo
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 def main():
     print(f"Working in: {ROOT_DIR}")

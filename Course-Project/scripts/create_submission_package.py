@@ -1,5 +1,5 @@
 """Script to generate the complete CourseAgentAI submission package:
-1. Assignments/ folder with Assignment_01 through Assignment_12
+1. Assignments/ folder with Assignment-01 through Assignment-12
 2. Course Project/ folder with Problem_Statement, Final_Report, Project_Documentation, Source_Code
 3. Root README.md with all required sections and links
 """
@@ -8,11 +8,11 @@ import os
 import shutil
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 ASSIGNMENTS_DATA = [
     {
-        "id": "Assignment_01",
+        "id": "Assignment-01",
         "num": 1,
         "title": "Clarify-Plan-Revise Academic Course Workspace Planner",
         "pattern": "Clarify -> Plan -> Revise Loop",
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_02",
+        "id": "Assignment-02",
         "num": 2,
         "title": "Deterministic ReAct Tool-Using Agent & Auditable Auditor",
         "pattern": "ReAct / Tool Execution with Pydantic Validation",
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_03",
+        "id": "Assignment-03",
         "num": 3,
         "title": "Reusable Academic Skills Registry & Dynamic Routing",
         "pattern": "Modular Skill Composition & Declarative Registry",
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_04",
+        "id": "Assignment-04",
         "num": 4,
         "title": "Dual-Tier Memory Architecture & Grounded Retrieval",
         "pattern": "Short-Term Dialog vs Long-Term Vector/Lexical RAG",
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_05",
+        "id": "Assignment-05",
         "num": 5,
         "title": "Governed Academic Connector with RBAC & MCP Architecture",
         "pattern": "Model Context Protocol (MCP) Style Governed Access",
@@ -238,7 +238,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_06",
+        "id": "Assignment-06",
         "num": 6,
         "title": "Resilient Agent Runtime with Checkpoints & State Recovery",
         "pattern": "State Checkpointing, Budgets & Fault Tolerance",
@@ -278,7 +278,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_07",
+        "id": "Assignment-07",
         "num": 7,
         "title": "10-Node Specialist Graph DAG with Bounded Retries",
         "pattern": "Specialist Node Graph DAG & Faculty Approval Gates",
@@ -322,7 +322,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_08",
+        "id": "Assignment-08",
         "num": 8,
         "title": "Parallel Specialist Swarm & Asynchronous Fan-Out/Fan-In",
         "pattern": "Concurrent Scatter-Gather Swarm Orchestration",
@@ -362,7 +362,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_09",
+        "id": "Assignment-09",
         "num": 9,
         "title": "Deep Research Claim Verifier with Entailment Distinction",
         "pattern": "Deep Research, Source Grounding & Entailment",
@@ -399,7 +399,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_10",
+        "id": "Assignment-10",
         "num": 10,
         "title": "Cloud Operations Health Monitor & Self-Healing Diagnostic Agent",
         "pattern": "Autonomous Infrastructure Diagnostics & Approval-Gated Repair",
@@ -440,7 +440,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_11",
+        "id": "Assignment-11",
         "num": 11,
         "title": "Agentic SDLC Code Synthesis & Sandboxed Verification",
         "pattern": "Specification -> Code -> Test -> Verification Pipeline",
@@ -478,7 +478,7 @@ if __name__ == '__main__':
 """
     },
     {
-        "id": "Assignment_12",
+        "id": "Assignment-12",
         "num": 12,
         "title": "Enterprise Safety, Governance, RBAC & State Rollback",
         "pattern": "Persistent Change Proposals, Approval Gates & Rollback",
@@ -629,7 +629,7 @@ if str(ROOT_DIR) not in sys.path:
     for asg in ASSIGNMENTS_DATA:
         asg_overview_table += f"| [{asg['id']}]({asg['id']}/README.md) | {asg['title']} | `{asg['pattern']}` | {asg['weight']} |\n"
         
-    top_asg_readme = f"""# CourseAgentAI — All 12 Laboratory Assignments
+    top_asg_readme = f"""# CourseAgentAI â€” All 12 Laboratory Assignments
 **Course:** `26ECAC401: Agentic AI`  
 **Institution:** University Academic Laboratory Coursework  
 **Academic Year:** 2026  
@@ -647,7 +647,7 @@ Each assignment folder contains a dedicated `runner.py` script that can be execu
 
 ```powershell
 # Example: Verify Assignment 1
-python Assignments/Assignment_01/runner.py
+python Assignments/Assignment-01/runner.py
 
 # Example: Run Pytest across all assignments
 python -m pytest tests/ -q

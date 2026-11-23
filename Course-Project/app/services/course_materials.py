@@ -767,6 +767,23 @@ def material_preview(material: dict[str, Any]) -> dict[str, Any]:
     extension = material["extension"]
     if extension in {"pdf", "png", "jpg", "jpeg", "gif", "webp"}:
         return {"kind": "inline", "url": f"/api/course-materials/{material['material_id']}/content"}
+    if extension == "xlsx":
+        try:
+            import openpyxl
+
+            workbook = openpyxl.load_workbook(material_file_path(material), read_only=True, data_only=True)
+            lines: list[str] = []
+            for worksheet in workbook.worksheets[:20]:
+                lines.append(f"[Sheet: {worksheet.title}]")
+                for row in worksheet.iter_rows(min_row=1, max_row=200, values_only=True):
+                    values = ["" if value is None else str(value) for value in row]
+                    if any(values):
+                        lines.append(" | ".join(values))
+            workbook.close()
+            return {"kind": "text", "text": "\n".join(lines)[:20000] or "The workbook has no readable cell values."}
+        except Exception as exc:
+            logger.exception("XLSX preview failed for %s.", material["material_id"])
+            raise RuntimeError("Could not generate the XLSX preview.") from exc
     if extension not in {"docx", "pptx", "txt", "md"}:
         return {"kind": "download", "text": "Preview is not available for this file type. Download the original file."}
     try:

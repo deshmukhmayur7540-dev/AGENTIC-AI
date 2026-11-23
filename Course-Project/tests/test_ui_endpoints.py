@@ -71,13 +71,13 @@ def test_ui_static_assets_serve_successfully():
     """Verify that all local frontend assets are served with status 200."""
     index = client.get("/")
     assert index.status_code == 200
-    assert 'src="/static/app.js?v=1.1.4"' in index.text
+    assert 'src="/static/app.js?v=1.1.5"' in index.text
 
     res_css = client.get("/static/style.css")
     assert res_css.status_code == 200
     assert "lab-switcher" in res_css.text
     assert ".admin-assignment-row" in res_css.text
-    assert 'href="/static/style.css?v=1.1.3"' in index.text
+    assert 'href="/static/style.css?v=1.1.5"' in index.text
 
     res_js = client.get("/static/app.js")
     assert res_js.status_code == 200

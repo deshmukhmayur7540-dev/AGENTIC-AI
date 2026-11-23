@@ -10,7 +10,7 @@ from pathlib import Path
 from dulwich import porcelain
 from dulwich.repo import Repo
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 def main():
     if len(sys.argv) < 2:

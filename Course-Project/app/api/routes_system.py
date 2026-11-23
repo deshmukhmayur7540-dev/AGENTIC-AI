@@ -1,8 +1,10 @@
 """System and diagnostic endpoints for CourseAgentAI."""
 
 from typing import Optional
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from app.auth import AuthenticatedUser, require_roles
+from app.data.db import get_db_connection
 from config import settings
 from app.core.coordinator import coordinator
 from app.core.registry import lab_registry
@@ -11,6 +13,60 @@ from app.models.common import APIEnvelope, ScenarioDefinition
 from app.services.audit_service import audit_service
 
 router = APIRouter(prefix="/api/system", tags=["System Diagnostics & Scenarios"])
+
+
+class AccountStateUpdate(BaseModel):
+    is_active: bool
+
+
+@router.get("/admin/users", response_model=APIEnvelope)
+async def list_admin_users(
+    user: AuthenticatedUser = Depends(require_roles("ADMIN")),
+) -> APIEnvelope:
+    """List protected application accounts for authenticated administrators."""
+    with get_db_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT user_id, email, display_name, role, student_id, course_scopes, is_active, created_at
+            FROM auth_users
+            ORDER BY role, display_name
+            """
+        ).fetchall()
+    data = [dict(row) for row in rows]
+    return APIEnvelope(success=True, data=data, trace_id="admin-users")
+
+
+@router.patch("/admin/users/{user_id}/active", response_model=APIEnvelope)
+async def update_admin_user_active(
+    user_id: str,
+    request: AccountStateUpdate,
+    user: AuthenticatedUser = Depends(require_roles("ADMIN")),
+) -> APIEnvelope:
+    """Activate or deactivate an account; administrator account removal is not performed."""
+    with get_db_connection(immediate=True) as conn:
+        target = conn.execute(
+            "SELECT user_id, role FROM auth_users WHERE user_id = ?",
+            (user_id,),
+        ).fetchone()
+        if not target:
+            raise HTTPException(status_code=404, detail="Account was not found.")
+        if target["role"] == "ADMIN" and not request.is_active:
+            active_admin_count = conn.execute(
+                "SELECT COUNT(*) AS count FROM auth_users WHERE role = 'ADMIN' AND is_active = 1"
+            ).fetchone()["count"]
+            if active_admin_count <= 1:
+                raise HTTPException(status_code=400, detail="The final administrator account cannot be deactivated.")
+        conn.execute(
+            "UPDATE auth_users SET is_active = ? WHERE user_id = ?",
+            (1 if request.is_active else 0, user_id),
+        )
+        if not request.is_active:
+            conn.execute("DELETE FROM auth_sessions WHERE user_id = ?", (user_id,))
+    return APIEnvelope(
+        success=True,
+        data={"user_id": user_id, "is_active": request.is_active},
+        trace_id=f"admin-account-{user_id}",
+    )
 
 
 @router.get("/status", response_model=APIEnvelope)

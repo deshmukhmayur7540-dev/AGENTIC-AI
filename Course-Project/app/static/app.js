@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lab14: document.getElementById('nav-tab-lab14'),
       submissions: document.getElementById('nav-tab-submissions'),
       faculty: document.getElementById('nav-tab-faculty'),
+      admin: document.getElementById('nav-tab-admin'),
       history: document.getElementById('nav-tab-history'),
       about: document.getElementById('nav-tab-about'),
     },
@@ -1147,12 +1148,13 @@ document.addEventListener('DOMContentLoaded', () => {
     notifications: 'Notifications',
     knowledge: 'Knowledge & Notes',
     faculty: 'Faculty Review',
+    admin: 'Administrator Oversight',
     history: 'History',
     about: 'About',
   };
 
   function switchLab(labId) {
-    const activeViewKey = labId === 'faculty' ? 'submissions' : labId;
+    const activeViewKey = labId === 'faculty' || labId === 'admin' ? 'submissions' : labId;
     Object.keys(el.navTabs).forEach((id) => {
       const tab = el.navTabs[id];
       if (!tab) return;
@@ -2685,8 +2687,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const isStudent = authenticatedUser.role === 'STUDENT';
       const isAdmin = authenticatedUser.role === 'ADMIN';
-      el.navTabs.faculty?.classList.toggle('hidden', isStudent);
+      const isFaculty = authenticatedUser.role === 'FACULTY';
+      el.navTabs.faculty?.classList.toggle('hidden', !isFaculty);
+      el.navTabs.admin?.classList.toggle('hidden', !isAdmin);
+      el.navTabs.submissions?.classList.toggle('hidden', isAdmin);
       el.navTabs.lab12?.classList.toggle('hidden', !isAdmin);
+      ['lab1', 'lab5', 'lab6', 'lab7', 'lab10'].forEach((lab) => {
+        el.navTabs[lab]?.classList.toggle('hidden', isStudent);
+      });
+      if (isStudent) {
+        document.querySelectorAll('.dash-lab-card').forEach((card) => {
+          if (['lab1', 'lab5', 'lab6', 'lab7', 'lab10', 'lab12'].includes(card.dataset.goto)) {
+            card.classList.add('hidden');
+          }
+        });
+      }
       el.navTabs.history?.classList.toggle('hidden', !isAdmin);
       el.btnAuditDrawer?.classList.toggle('hidden', !isAdmin);
       if (el.btnPortalStudent) el.btnPortalStudent.classList.toggle('hidden', !isStudent);
@@ -3494,6 +3509,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Submissions Event Listeners
   if (el.navTabs.submissions) {
     el.navTabs.submissions.addEventListener('click', () => switchLab('submissions'));
+  }
+  if (el.navTabs.faculty) {
+    el.navTabs.faculty.addEventListener('click', () => switchLab('faculty'));
+  }
+  if (el.navTabs.admin) {
+    el.navTabs.admin.addEventListener('click', () => switchLab('admin'));
   }
   if (el.btnPortalStudent) {
     el.btnPortalStudent.addEventListener('click', () => switchPortalRole('STUDENT'));

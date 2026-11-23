@@ -8,10 +8,10 @@
 ## Team Information
 | Role | Name | USN | Division | Email |
 | :--- | :--- | :--- | :--- | :--- |
-| **Team Lead / Systems Architect** | `[Student Name 1]` | `[USN 1]` | `[Division A/B]` | `[student1@university.edu]` |
-| **Backend & Agent Engineer** | `[Student Name 2]` | `[USN 2]` | `[Division A/B]` | `[student2@university.edu]` |
-| **Frontend & UI/UX Specialist** | `[Student Name 3]` | `[USN 3]` | `[Division A/B]` | `[student3@university.edu]` |
-| **QA & Verification Engineer** | `[Student Name 4]` | `[USN 4]` | `[Division A/B]` | `[student4@university.edu]` |
+| **Team Lead / Systems Architect** | Mayur Deshmukh | 01FE23BCI034 | A | — |
+| **Backend & Agent Engineer** | Shrivatsa R D | 01FE23BCI038 | A | — |
+| **Frontend & UI/UX Specialist** | Riya P | 01FE23BCI027 | A | — |
+| **QA & Verification Engineer** | Shakti I | 01FE23BCI011 | A | — |
 
 ---
 
